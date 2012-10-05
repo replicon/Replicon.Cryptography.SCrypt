@@ -1,4 +1,5 @@
 #include "SCrypt.h"
+#include "SaltParseException.h"
 #include "crypto_scrypt.h"
 
 using namespace System;
@@ -8,10 +9,10 @@ namespace SCrypt
 {
     String^ SCrypt::GenerateSalt()
     {
-        return GenerateSalt(8, 16384, 8, 1);
+        return GenerateSalt(16, 16384, 8, 1, 32);
     }
 
-    String^ SCrypt::GenerateSalt(UInt32 saltLengthBytes, UInt64 N, UInt32 r, UInt32 p)
+    String^ SCrypt::GenerateSalt(UInt32 saltLengthBytes, UInt64 N, UInt32 r, UInt32 p, UInt32 hashLengthBytes)
     {
         array<Byte>^ salt = gcnew array<Byte>(saltLengthBytes);
         System::Security::Cryptography::RandomNumberGenerator::Create()->GetBytes(salt);
@@ -24,24 +25,66 @@ namespace SCrypt
         builder->Append("$");
         builder->Append(p);
         builder->Append("$");
+        builder->Append(hashLengthBytes);
+        builder->Append("$");
         builder->Append(Convert::ToBase64String(salt));
+        builder->Append("$");
         return builder->ToString();
     }
 
-    array<Byte>^ SCrypt::DerivePassword(array<Byte>^ password, array<Byte>^ salt, UInt64 N, UInt32 r, UInt32 p, UInt32 derivedPasswordLengthBytes)
+    String^ SCrypt::HashPassword(String^ password)
+    {
+        return HashPassword(password, GenerateSalt());
+    }
+
+    String^ SCrypt::HashPassword(String^ password, String^ salt)
+    {
+        array<String^>^ saltComponents = salt->Split('$');
+        if (saltComponents->Length != 8)
+            throw gcnew SaltParseException("Expected 8 dollar-sign ($) delimited salt components");
+        else if (saltComponents[0] != "" || saltComponents[1] != "scrypt")
+            throw gcnew SaltParseException("Expected $scrypt$");
+
+        UInt64 N;
+        UInt32 r;
+        UInt32 p;
+        UInt32 hashLengthBytes;
+
+        if (!UInt64::TryParse(saltComponents[2], N))
+            throw gcnew SaltParseException("Failed to parse N parameter");
+        else if (!UInt32::TryParse(saltComponents[3], r))
+            throw gcnew SaltParseException("Failed to parse r parameter");
+        else if (!UInt32::TryParse(saltComponents[4], p))
+            throw gcnew SaltParseException("Failed to parse p parameter");
+        else if (!UInt32::TryParse(saltComponents[5], hashLengthBytes))
+            throw gcnew SaltParseException("Failed to parse hashLengthBytes parameter");
+
+        array<Byte>^ salt_data = Convert::FromBase64String(saltComponents[6]);
+        array<Byte>^ password_data = System::Text::Encoding::UTF8->GetBytes(password);
+        array<Byte>^ hash_data = DeriveKey(password_data, salt_data, N, r, p, hashLengthBytes);
+
+        return salt->Substring(0, salt->LastIndexOf('$') + 1) + Convert::ToBase64String(hash_data);
+    }
+
+    bool SCrypt::Verify(String^ password, String^ hash)
+    {
+        return hash == HashPassword(password, hash);
+    }
+
+    array<Byte>^ SCrypt::DeriveKey(array<Byte>^ password, array<Byte>^ salt, UInt64 N, UInt32 r, UInt32 p, UInt32 derivedKeyLengthBytes)
     {
         pin_ptr<Byte> password_ptr = &password[0];
         pin_ptr<Byte> salt_ptr = &salt[0];
 
-        array<Byte>^ derived_password = gcnew array<Byte>(derivedPasswordLengthBytes);
-        pin_ptr<Byte> derived_password_ptr = &derived_password[0];
+        array<Byte>^ derived_key = gcnew array<Byte>(derivedKeyLengthBytes);
+        pin_ptr<Byte> derived_key_ptr = &derived_key[0];
 
         crypto_scrypt(
             password_ptr, password->Length,
             salt_ptr, salt->Length,
             N, r, p,
-            derived_password_ptr, derived_password->Length);
+            derived_key_ptr, derived_key->Length);
 
-        return derived_password;
+        return derived_key;
     }
 }
