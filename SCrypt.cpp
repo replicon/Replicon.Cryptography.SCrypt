@@ -79,11 +79,14 @@ namespace SCrypt
         array<Byte>^ derived_key = gcnew array<Byte>(derivedKeyLengthBytes);
         pin_ptr<Byte> derived_key_ptr = &derived_key[0];
 
-        crypto_scrypt(
+        int crypto_error = crypto_scrypt(
             password_ptr, password->Length,
             salt_ptr, salt->Length,
             N, r, p,
             derived_key_ptr, derived_key->Length);
+
+        if (crypto_error != 0)
+            throw gcnew System::InvalidOperationException("crypto_scrypt internal error");
 
         return derived_key;
     }
