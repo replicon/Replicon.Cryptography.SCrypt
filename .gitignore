@@ -1,0 +1,4 @@
+scrypt.dll
+scrypt.def
+scrypt.a
+*.o
