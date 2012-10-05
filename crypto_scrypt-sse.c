@@ -29,9 +29,9 @@
 #include "scrypt_platform.h"
 
 #include <sys/types.h>
-#ifndef __MINGW32__
-#include <sys/mman.h>
-#endif
+//#ifndef __MINGW32__
+//#include <sys/mman.h>
+//#endif
 
 #include <emmintrin.h>
 #include <errno.h>
@@ -80,7 +80,7 @@ blkxor(void * dest, void * src, size_t len)
  * Apply the salsa20/8 core to the provided block.
  */
 static void
-salsa20_8(__m128i B[4])
+salsa20_8(__m128i* B)
 {
 	__m128i X0, X1, X2, X3;
 	__m128i T;
@@ -261,7 +261,8 @@ smix(uint8_t * B, size_t r, uint64_t N, void * V, void * XY)
  * Return 0 on success; or -1 on error.
  */
 int
-__stdcall __declspec(dllexport)
+__declspec(dllexport)
+__stdcall
 crypto_scrypt(const uint8_t * passwd, size_t passwdlen,
     const uint8_t * salt, size_t saltlen, uint64_t N, uint32_t r, uint32_t p,
     uint8_t * buf, size_t buflen)

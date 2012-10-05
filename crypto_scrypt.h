@@ -40,6 +40,9 @@
  *
  * Return 0 on success; or -1 on error.
  */
-int __stdcall __declspec(dllexport) crypto_scrypt(const uint8_t *, size_t, const uint8_t *, size_t, uint64_t, uint32_t, uint32_t, uint8_t *, size_t);
+int
+    __declspec(dllexport)
+    __stdcall
+    crypto_scrypt(const uint8_t *, size_t, const uint8_t *, size_t, uint64_t, uint32_t, uint32_t, uint8_t *, size_t);
 
 #endif /* !_CRYPTO_SCRYPT_H_ */
