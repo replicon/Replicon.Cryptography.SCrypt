@@ -29,9 +29,6 @@
 #include "scrypt_platform.h"
 
 #include <sys/types.h>
-//#ifndef __MINGW32__
-//#include <sys/mman.h>
-//#endif
 
 #include <emmintrin.h>
 #include <errno.h>
@@ -54,8 +51,8 @@ static void smix(uint8_t *, size_t, uint64_t, void *, void *);
 static void
 blkcpy(void * dest, void * src, size_t len)
 {
-	__m128i * D = (__m128i*)dest;
-	__m128i * S = (__m128i*)src;
+	__m128i * D = dest;
+	__m128i * S = src;
 	size_t L = len / 16;
 	size_t i;
 
@@ -66,8 +63,8 @@ blkcpy(void * dest, void * src, size_t len)
 static void
 blkxor(void * dest, void * src, size_t len)
 {
-	__m128i * D = (__m128i*)dest;
-	__m128i * S = (__m128i*)src;
+	__m128i * D = dest;
+	__m128i * S = src;
 	size_t L = len / 16;
 	size_t i;
 
@@ -178,7 +175,7 @@ blockmix_salsa8(__m128i * Bin, __m128i * Bout, __m128i * X, size_t r)
 static uint64_t
 integerify(void * B, size_t r)
 {
-	uint32_t * X = (uint32_t*)(void *)((uintptr_t)(B) + (2 * r - 1) * 64);
+	uint32_t * X = (void *)((uintptr_t)(B) + (2 * r - 1) * 64);
 
 	return (((uint64_t)(X[13]) << 32) + X[0]);
 }
@@ -194,10 +191,10 @@ integerify(void * B, size_t r)
 static void
 smix(uint8_t * B, size_t r, uint64_t N, void * V, void * XY)
 {
-	__m128i * X = (__m128i*)XY;
-	__m128i * Y = (__m128i*)(void *)((uintptr_t)(XY) + 128 * r);
-	__m128i * Z = (__m128i*)(void *)((uintptr_t)(XY) + 256 * r);
-	uint32_t * X32 = (uint32_t*)(void *)X;
+	__m128i * X = XY;
+	__m128i * Y = (void *)((uintptr_t)(XY) + 128 * r);
+	__m128i * Z = (void *)((uintptr_t)(XY) + 256 * r);
+	uint32_t * X32 = (void *)X;
 	uint64_t i, j;
 	size_t k;
 
@@ -261,8 +258,6 @@ smix(uint8_t * B, size_t r, uint64_t N, void * V, void * XY)
  * Return 0 on success; or -1 on error.
  */
 int
-__declspec(dllexport)
-__stdcall
 crypto_scrypt(const uint8_t * passwd, size_t passwdlen,
     const uint8_t * salt, size_t saltlen, uint64_t N, uint32_t r, uint32_t p,
     uint8_t * buf, size_t buflen)
@@ -336,7 +331,7 @@ crypto_scrypt(const uint8_t * passwd, size_t passwdlen,
 #endif
 
 	/* 1: (B_0 ... B_{p-1}) <-- PBKDF2(P, S, 1, p * MFLen) */
-	PBKDF2_scrypt_SHA256(passwd, passwdlen, salt, saltlen, 1, B, p * 128 * r);
+	PBKDF2_SHA256(passwd, passwdlen, salt, saltlen, 1, B, p * 128 * r);
 
 	/* 2: for i = 0 to p - 1 do */
 	for (i = 0; i < p; i++) {
@@ -345,7 +340,7 @@ crypto_scrypt(const uint8_t * passwd, size_t passwdlen,
 	}
 
 	/* 5: DK <-- PBKDF2(P, B, 1, dkLen) */
-	PBKDF2_scrypt_SHA256(passwd, passwdlen, B, p * 128 * r, 1, buf, buflen);
+	PBKDF2_SHA256(passwd, passwdlen, B, p * 128 * r, 1, buf, buflen);
 
 	/* Free memory. */
 #ifdef MAP_ANON

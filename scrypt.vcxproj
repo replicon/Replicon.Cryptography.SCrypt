@@ -68,18 +68,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IntDir>$(Configuration)\obj\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>$(ProjectName)-$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>$(Configuration)\obj\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>$(ProjectName)-$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(Configuration)\obj\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>$(ProjectName)-$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(Configuration)\obj\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>$(ProjectName)-$(Platform)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -145,8 +149,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="crypto_scrypt-sse.c">
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -156,8 +158,6 @@
     </ClCompile>
     <ClCompile Include="SCrypt.cpp" />
     <ClCompile Include="sha256.c">
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
