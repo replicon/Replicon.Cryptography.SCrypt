@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scrypt", "scrypt.vcxproj", "{A0B7CBDC-B8E9-4AAD-89D9-6FEBFCE026E9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scrypt-mma", "scrypt-mma.vcxproj", "{A0B7CBDC-B8E9-4AAD-89D9-6FEBFCE026E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
