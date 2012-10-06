@@ -1,5 +1,5 @@
-scrypt for .NET
----------------
+scrypt-mma
+----------
 
 This library is a wrapper for the scrypt key-deriviation function (http://www.tarsnap.com/scrypt.html) created by
 Colin Percival.  The core of the library is a copy of the scrypt KDF routines written in C and distributed by Colin.
@@ -29,13 +29,15 @@ Psuedo-API description::
         public class SCrypt
         {
             public static String GenerateSalt();
-            public static String GenerateSalt(UInt32 saltLengthBytes, UInt64 N, UInt32 r, UInt32 p, UInt32 hashLengthBytes);
+            public static String GenerateSalt(UInt32 saltLengthBytes, UInt64 N, UInt32 r, UInt32 p,
+                UInt32 hashLengthBytes);
 
             public static String HashPassword(String password);
             public static String HashPassword(String password, String salt);
 
             public static bool Verify(String password, String hash);
 
-            public static Byte[] DeriveKey(Byte[] password, Byte[] salt, UInt64 N, UInt32 r, UInt32 p, UInt32 derivedKeyLengthBytes);
+            public static Byte[] DeriveKey(Byte[] password, Byte[] salt, UInt64 N, UInt32 r, UInt32 p,
+                UInt34 derivedKeyLengthBytes);
         }
     }
