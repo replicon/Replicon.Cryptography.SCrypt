@@ -1,11 +1,9 @@
-scrypt.dll
-scrypt.def
-scrypt.a
-*.o
-Debug
-Release
 ipch
 *.opensdf
 *.vcxproj.user
 *.suo
 *.sdf
+*.aps
+Win32
+x64
+obj

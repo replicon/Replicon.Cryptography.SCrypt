@@ -7,7 +7,7 @@ namespace SCrypt
     /// <summary>A .NET wrapper for a native implementation of the scrypt key-derivation function.  In addition to
     /// exposing the raw key-derivation function (DerivePassword), SCrypt also contains helper functions for a common
     /// use-case of scrypt as a password hashing algorithm.</summary>
-    public ref class SCrypt
+    public ref class SCrypt abstract sealed
     {
     public:
         /// <summary>Generate a salt for use with HashPassword, selecting reasonable default values for scrypt
