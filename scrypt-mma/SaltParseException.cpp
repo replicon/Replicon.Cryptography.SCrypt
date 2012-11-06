@@ -1,6 +1,6 @@
 #include "SaltParseException.h"
 
-namespace SCrypt
+namespace SCryptMMA
 {
     SaltParseException::SaltParseException(String^ message)
         : Exception(message)

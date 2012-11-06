@@ -2,7 +2,7 @@
 
 using namespace System;
 
-namespace SCrypt
+namespace SCryptMMA
 {
     public ref class SaltParseException : public Exception
     {

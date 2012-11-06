@@ -5,7 +5,7 @@
 using namespace System;
 using namespace System::Text;
 
-namespace SCrypt
+namespace SCryptMMA
 {
     String^ SCrypt::GenerateSalt()
     {

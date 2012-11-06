@@ -2,7 +2,7 @@
 
 using namespace System;
 
-namespace SCrypt
+namespace SCryptMMA
 {
     /// <summary>A .NET wrapper for a native implementation of the scrypt key-derivation function.  In addition to
     /// exposing the raw key-derivation function (DerivePassword), SCrypt also contains helper functions for a common
