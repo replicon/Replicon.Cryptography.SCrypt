@@ -7,9 +7,15 @@ using namespace System::Text;
 
 namespace SCryptMMA
 {
+    static const UInt32 DefaultSaltLengthBytes = 16;
+    static const UInt64 Default_N = 16384;
+    static const UInt32 Default_r = 8;
+    static const UInt32 Default_p = 1;
+    static const UInt32 DefaultHashLengthBytes = 32;
+
     String^ SCrypt::GenerateSalt()
     {
-        return GenerateSalt(16, 16384, 8, 1, 32);
+        return GenerateSalt(DefaultSaltLengthBytes, Default_N, Default_r, Default_p, DefaultHashLengthBytes);
     }
 
     String^ SCrypt::GenerateSalt(UInt32 saltLengthBytes, UInt64 N, UInt32 r, UInt32 p, UInt32 hashLengthBytes)

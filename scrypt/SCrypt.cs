@@ -143,6 +143,51 @@ namespace SCrypt
 
         #region Exposed methods
 
+        public static UInt32 DefaultSaltLengthBytes
+        {
+            get
+            {
+                HookupAssemblyLoader();
+                return WrappedDefaultSaltLengthBytes;
+            }
+        }
+
+        public static UInt64 Default_N
+        {
+            get
+            {
+                HookupAssemblyLoader();
+                return WrappedDefault_N;
+            }
+        }
+
+        public static UInt32 Default_r
+        {
+            get
+            {
+                HookupAssemblyLoader();
+                return WrappedDefault_r;
+            }
+        }
+
+        public static UInt32 Default_p
+        {
+            get
+            {
+                HookupAssemblyLoader();
+                return WrappedDefault_p;
+            }
+        }
+
+        public static UInt32 DefaultHashLengthBytes
+        {
+            get
+            {
+                HookupAssemblyLoader();
+                return WrappedDefaultHashLengthBytes;
+            }
+        }
+
         public static String GenerateSalt()
         {
             HookupAssemblyLoader();
@@ -192,6 +237,27 @@ namespace SCrypt
          * Our exposed methods can't have a direct SCryptMMA reference in them, since they need to hookup the fancy
          * assembly resolver before it's referenced.  Hence we have these wrapped methods that look pointless.
          */
+
+        private static UInt32 WrappedDefaultSaltLengthBytes
+        {
+            get { return SCryptMMA.SCrypt.DefaultSaltLengthBytes; }
+        }
+        private static UInt64 WrappedDefault_N
+        {
+            get { return SCryptMMA.SCrypt.Default_N; }
+        }
+        private static UInt32 WrappedDefault_r
+        {
+            get { return SCryptMMA.SCrypt.Default_r; }
+        }
+        private static UInt32 WrappedDefault_p
+        {
+            get { return SCryptMMA.SCrypt.Default_p; }
+        }
+        private static UInt32 WrappedDefaultHashLengthBytes
+        {
+            get { return SCryptMMA.SCrypt.DefaultHashLengthBytes; }
+        }
 
         private static String WrappedGenerateSalt()
         {
