@@ -1,11 +1,22 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Security.Principal;
+using System.Threading;
 
 namespace SCrypt
 {
     public class SCrypt
     {
+        #region mixed-mode assembly loader
+
+        /*
+         * Upon attempting to perform any SCrypt operations, we hook into the AppDomain's AssemblyResolve event to
+         * provide a custom resolver for the scrypt-mma assembly.  When asked to resolve it, we determine whether
+         * we should be using the 32-bit or 64-bit version, extract the correct one from an embedded resource
+         * to a temp directory, and then load it from the temp directory.
+         */
+
         private static object hookupLock = new object();
         private static bool hookupComplete = false;
         private static string tempPath = null;
@@ -43,6 +54,10 @@ namespace SCrypt
             }
         }
 
+        /// <summary>
+        /// There is a similar method in the .NET 4 base classes, but we need to implement our own to support .NET
+        /// 3.5 still.
+        /// </summary>
         private static void CopyStream(Stream input, Stream output)
         {
             byte[] buffer = new byte[16 * 1024];
@@ -97,41 +112,86 @@ namespace SCrypt
             return null;
         }
 
+        #endregion
+
+        /// <summary>
+        /// CRT initialization when first accessing the mixed-mode assembly will attempt to initialize a CRT appdomain,
+        /// which attempts to copy the current thread's principal.  However, because the new appdomain doesn't have
+        /// a configuration matching the current appdomain, it often can't find the assemblies required to deserialize
+        /// the principal.  To work around this, we just null-out the thread principal when calling the mixed-mode
+        /// assemblies.
+        /// </summary>
+        private class NullPrincipalBlock : IDisposable
+        {
+            private IPrincipal storedPrincipal;
+
+            public NullPrincipalBlock()
+            {
+                this.storedPrincipal = Thread.CurrentPrincipal;
+                Thread.CurrentPrincipal = null;
+            }
+
+            public void Dispose()
+            {
+                if (this.storedPrincipal != null)
+                {
+                    Thread.CurrentPrincipal = this.storedPrincipal;
+                    this.storedPrincipal = null;
+                }
+            }
+        }
+
+        #region Exposed methods
+
         public static String GenerateSalt()
         {
             HookupAssemblyLoader();
-            return WrappedGenerateSalt();
+            using (new NullPrincipalBlock())
+                return WrappedGenerateSalt();
         }
 
         public static String GenerateSalt(UInt32 saltLengthBytes, UInt64 N, UInt32 r, UInt32 p, UInt32 hashLengthBytes)
         {
             HookupAssemblyLoader();
-            return WrappedGenerateSalt(saltLengthBytes, N, r, p, hashLengthBytes);
+            using (new NullPrincipalBlock())
+                return WrappedGenerateSalt(saltLengthBytes, N, r, p, hashLengthBytes);
         }
 
         public static String HashPassword(String password)
         {
             HookupAssemblyLoader();
-            return WrappedHashPassword(password);
+            using (new NullPrincipalBlock())
+                return WrappedHashPassword(password);
         }
 
         public static String HashPassword(String password, String salt)
         {
             HookupAssemblyLoader();
-            return WrappedHashPassword(password, salt);
+            using (new NullPrincipalBlock())
+                return WrappedHashPassword(password, salt);
         }
 
         public static bool Verify(String password, String hash)
         {
             HookupAssemblyLoader();
-            return WrappedVerify(password, hash);
+            using (new NullPrincipalBlock())
+                return WrappedVerify(password, hash);
         }
 
         public static Byte[] DeriveKey(Byte[] password, Byte[] salt, UInt64 N, UInt32 r, UInt32 p, UInt32 derivedKeyLengthBytes)
         {
             HookupAssemblyLoader();
-            return WrappedDeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
+            using (new NullPrincipalBlock())
+                return WrappedDeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
         }
+
+        #endregion
+        #region Wrapped methods
+
+        /*
+         * Our exposed methods can't have a direct SCryptMMA reference in them, since they need to hookup the fancy
+         * assembly resolver before it's referenced.  Hence we have these wrapped methods that look pointless.
+         */
 
         private static String WrappedGenerateSalt()
         {
@@ -162,5 +222,7 @@ namespace SCrypt
         {
             return SCryptMMA.SCrypt.DeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
         }
+
+        #endregion
     }
 }
