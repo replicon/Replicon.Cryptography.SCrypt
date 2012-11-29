@@ -7,4 +7,4 @@ ipch
 Win32
 x64
 obj
-scrypt/bin
+Replicon.Cryptography.SCrypt/bin

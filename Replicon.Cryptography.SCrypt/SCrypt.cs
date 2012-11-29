@@ -148,7 +148,8 @@ namespace Replicon.Cryptography.SCrypt
             get
             {
                 HookupAssemblyLoader();
-                return WrappedDefaultSaltLengthBytes;
+                using (new NullPrincipalBlock())
+                    return WrappedDefaultSaltLengthBytes;
             }
         }
 
@@ -157,7 +158,8 @@ namespace Replicon.Cryptography.SCrypt
             get
             {
                 HookupAssemblyLoader();
-                return WrappedDefault_N;
+                using (new NullPrincipalBlock())
+                    return WrappedDefault_N;
             }
         }
 
@@ -166,7 +168,8 @@ namespace Replicon.Cryptography.SCrypt
             get
             {
                 HookupAssemblyLoader();
-                return WrappedDefault_r;
+                using (new NullPrincipalBlock())
+                    return WrappedDefault_r;
             }
         }
 
@@ -175,7 +178,8 @@ namespace Replicon.Cryptography.SCrypt
             get
             {
                 HookupAssemblyLoader();
-                return WrappedDefault_p;
+                using (new NullPrincipalBlock())
+                    return WrappedDefault_p;
             }
         }
 
@@ -184,7 +188,8 @@ namespace Replicon.Cryptography.SCrypt
             get
             {
                 HookupAssemblyLoader();
-                return WrappedDefaultHashLengthBytes;
+                using (new NullPrincipalBlock())
+                    return WrappedDefaultHashLengthBytes;
             }
         }
 
