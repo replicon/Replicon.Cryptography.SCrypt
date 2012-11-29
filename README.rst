@@ -1,5 +1,5 @@
-scrypt-mma
-----------
+Replicon.Cryptography.SCrypt
+----------------------------
 
 This library is a wrapper for the scrypt key-deriviation function (http://www.tarsnap.com/scrypt.html) created by
 Colin Percival.  The core of the library is a copy of the scrypt KDF routines written in C and distributed by Colin.
@@ -24,7 +24,7 @@ Wrapper API
 
 Psuedo-API description::
 
-    namespace SCrypt
+    namespace Replicon.Cryptography.SCrypt
     {
         public class SCrypt
         {
