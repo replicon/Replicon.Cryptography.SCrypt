@@ -73,11 +73,16 @@ namespace SCryptMMA
 
     array<Byte>^ SCrypt::DeriveKey(array<Byte>^ password, array<Byte>^ salt, UInt64 N, UInt32 r, UInt32 p, UInt32 derivedKeyLengthBytes)
     {
-        pin_ptr<Byte> password_ptr = &password[0];
-        pin_ptr<Byte> salt_ptr = &salt[0];
+        // Known issue: N=1 causes crash in crypto_scrypt.  At least we can provide a directed error message for this
+        // case until it's fixed.
+        if (N == 1)
+            throw gcnew Exception("scrypt-mma crashes when using N=1, try using a different value or dig into the code and help fix this crash and remove this error");
+
+        pin_ptr<uint8_t> password_ptr = &password[0];
+        pin_ptr<uint8_t> salt_ptr = &salt[0];
 
         array<Byte>^ derived_key = gcnew array<Byte>(derivedKeyLengthBytes);
-        pin_ptr<Byte> derived_key_ptr = &derived_key[0];
+        pin_ptr<uint8_t> derived_key_ptr = &derived_key[0];
 
         int crypto_error = crypto_scrypt(
             password_ptr, password->Length,
