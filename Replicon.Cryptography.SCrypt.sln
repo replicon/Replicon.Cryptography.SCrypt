@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scrypt-mma", "scrypt-mma\scrypt-mma.vcxproj", "{A0B7CBDC-B8E9-4AAD-89D9-6FEBFCE026E9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Replicon.Cryptography.SCrypt.MMA", "Replicon.Cryptography.SCrypt.MMA\Replicon.Cryptography.SCrypt.MMA.vcxproj", "{A0B7CBDC-B8E9-4AAD-89D9-6FEBFCE026E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "scrypt", "scrypt\scrypt.csproj", "{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Replicon.Cryptography.SCrypt", "Replicon.Cryptography.SCrypt\Replicon.Cryptography.SCrypt.csproj", "{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

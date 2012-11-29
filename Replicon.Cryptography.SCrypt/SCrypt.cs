@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Security.Principal;
 using System.Threading;
 
-namespace SCrypt
+namespace Replicon.Cryptography.SCrypt
 {
     public class SCrypt
     {
@@ -12,9 +12,9 @@ namespace SCrypt
 
         /*
          * Upon attempting to perform any SCrypt operations, we hook into the AppDomain's AssemblyResolve event to
-         * provide a custom resolver for the scrypt-mma assembly.  When asked to resolve it, we determine whether
-         * we should be using the 32-bit or 64-bit version, extract the correct one from an embedded resource
-         * to a temp directory, and then load it from the temp directory.
+         * provide a custom resolver for the Replicon.Cryptography.SCrypt.MMA assembly.  When asked to resolve it, we
+         * determine whether we should be using the 32-bit or 64-bit version, extract the correct one from an embedded
+         * resource to a temp directory, and then load it from the temp directory.
          */
 
         private static object hookupLock = new object();
@@ -72,7 +72,7 @@ namespace SCrypt
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            if (args.Name.StartsWith("scrypt-mma,"))
+            if (args.Name.StartsWith("Replicon.Cryptography.SCrypt.MMA,"))
             {
                 lock (hookupLock)
                 {
@@ -87,25 +87,25 @@ namespace SCrypt
 
                         if (IntPtr.Size == 8)
                         {
-                            dll = "scrypt.scrypt-mma-x64.dll";
-                            pdb = "scrypt.scrypt-mma-x64.pdb";
+                            dll = "Replicon.Cryptography.SCrypt.Replicon.Cryptography.SCrypt.MMA-x64.dll";
+                            pdb = "Replicon.Cryptography.SCrypt.Replicon.Cryptography.SCrypt.MMA-x64.pdb";
                         }
                         else
                         {
-                            dll = "scrypt.scrypt-mma-win32.dll";
-                            pdb = "scrypt.scrypt-mma-win32.pdb";
+                            dll = "Replicon.Cryptography.SCrypt.Replicon.Cryptography.SCrypt.MMA-win32.dll";
+                            pdb = "Replicon.Cryptography.SCrypt.Replicon.Cryptography.SCrypt.MMA-win32.pdb";
                         }
 
                         using (Stream input = Assembly.GetExecutingAssembly().GetManifestResourceStream(dll))
-                        using (Stream output = new FileStream(Path.Combine(tempPath, "scrypt-mma.dll"), FileMode.CreateNew))
+                        using (Stream output = new FileStream(Path.Combine(tempPath, "Replicon.Cryptography.SCrypt.MMA.dll"), FileMode.CreateNew))
                             CopyStream(input, output);
 
                         using (Stream input = Assembly.GetExecutingAssembly().GetManifestResourceStream(pdb))
-                        using (Stream output = new FileStream(Path.Combine(tempPath, "scrypt-mma.pdb"), FileMode.CreateNew))
+                        using (Stream output = new FileStream(Path.Combine(tempPath, "Replicon.Cryptography.SCrypt.MMA.pdb"), FileMode.CreateNew))
                             CopyStream(input, output);
                     }
 
-                    return Assembly.LoadFile(Path.Combine(tempPath, "scrypt-mma.dll"));
+                    return Assembly.LoadFile(Path.Combine(tempPath, "Replicon.Cryptography.SCrypt.MMA.dll"));
                 }
             }
 
@@ -234,59 +234,59 @@ namespace SCrypt
         #region Wrapped methods
 
         /*
-         * Our exposed methods can't have a direct SCryptMMA reference in them, since they need to hookup the fancy
+         * Our exposed methods can't have a direct Replicon.Cryptography.SCrypt.MMA reference in them, since they need to hookup the fancy
          * assembly resolver before it's referenced.  Hence we have these wrapped methods that look pointless.
          */
 
         private static UInt32 WrappedDefaultSaltLengthBytes
         {
-            get { return SCryptMMA.SCrypt.DefaultSaltLengthBytes; }
+            get { return Replicon.Cryptography.SCrypt.MMA.SCrypt.DefaultSaltLengthBytes; }
         }
         private static UInt64 WrappedDefault_N
         {
-            get { return SCryptMMA.SCrypt.Default_N; }
+            get { return Replicon.Cryptography.SCrypt.MMA.SCrypt.Default_N; }
         }
         private static UInt32 WrappedDefault_r
         {
-            get { return SCryptMMA.SCrypt.Default_r; }
+            get { return Replicon.Cryptography.SCrypt.MMA.SCrypt.Default_r; }
         }
         private static UInt32 WrappedDefault_p
         {
-            get { return SCryptMMA.SCrypt.Default_p; }
+            get { return Replicon.Cryptography.SCrypt.MMA.SCrypt.Default_p; }
         }
         private static UInt32 WrappedDefaultHashLengthBytes
         {
-            get { return SCryptMMA.SCrypt.DefaultHashLengthBytes; }
+            get { return Replicon.Cryptography.SCrypt.MMA.SCrypt.DefaultHashLengthBytes; }
         }
 
         private static String WrappedGenerateSalt()
         {
-            return SCryptMMA.SCrypt.GenerateSalt();
+            return Replicon.Cryptography.SCrypt.MMA.SCrypt.GenerateSalt();
         }
 
         private static String WrappedGenerateSalt(UInt32 saltLengthBytes, UInt64 N, UInt32 r, UInt32 p, UInt32 hashLengthBytes)
         {
-            return SCryptMMA.SCrypt.GenerateSalt(saltLengthBytes, N, r, p, hashLengthBytes);
+            return Replicon.Cryptography.SCrypt.MMA.SCrypt.GenerateSalt(saltLengthBytes, N, r, p, hashLengthBytes);
         }
 
         private static String WrappedHashPassword(String password)
         {
-            return SCryptMMA.SCrypt.HashPassword(password);
+            return Replicon.Cryptography.SCrypt.MMA.SCrypt.HashPassword(password);
         }
 
         private static String WrappedHashPassword(String password, String salt)
         {
-            return SCryptMMA.SCrypt.HashPassword(password, salt);
+            return Replicon.Cryptography.SCrypt.MMA.SCrypt.HashPassword(password, salt);
         }
 
         private static bool WrappedVerify(String password, String hash)
         {
-            return SCryptMMA.SCrypt.Verify(password, hash);
+            return Replicon.Cryptography.SCrypt.MMA.SCrypt.Verify(password, hash);
         }
 
         private static Byte[] WrappedDeriveKey(Byte[] password, Byte[] salt, UInt64 N, UInt32 r, UInt32 p, UInt32 derivedKeyLengthBytes)
         {
-            return SCryptMMA.SCrypt.DeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
+            return Replicon.Cryptography.SCrypt.MMA.SCrypt.DeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
         }
 
         #endregion

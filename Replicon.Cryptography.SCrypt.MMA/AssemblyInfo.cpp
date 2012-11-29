@@ -5,8 +5,8 @@ using namespace System::Runtime::InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("scrypt-mma")];
-[assembly: AssemblyDescription("scrypt key-derivation function assembly")];
+[assembly: AssemblyTitle("Replicon.Cryptography.SCrypt.MMA")];
+[assembly: AssemblyDescription("scrypt key-derivation function mixed-mode asembly")];
 [assembly: AssemblyConfiguration("")];
 [assembly: AssemblyCompany("Replicon Inc.")];
 [assembly: AssemblyProduct("")];
@@ -31,5 +31,5 @@ using namespace System::Runtime::InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.1.6.2")];
-[assembly: AssemblyFileVersion("1.1.6.2")];
+[assembly: AssemblyVersion("1.1.6.3")];
+[assembly: AssemblyFileVersion("1.1.6.3")];
