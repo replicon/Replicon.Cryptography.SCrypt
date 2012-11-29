@@ -37,7 +37,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A0B7CBDC-B8E9-4AAD-89D9-6FEBFCE026E9}</ProjectGuid>
     <RootNamespace>scrypt</RootNamespace>
-    <ProjectName>scrypt-mma</ProjectName>
+    <ProjectName>Replicon.Cryptography.SCrypt.MMA</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug .NET 3.5|Win32'" Label="Configuration">
@@ -136,49 +136,49 @@
     <IntDir>obj\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
-    <OutDir>$(SolutionDir)scrypt-mma\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Replicon.Cryptography.SCrypt.MMA\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug .NET 4.0|Win32'">
     <IntDir>obj\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
-    <OutDir>$(SolutionDir)scrypt-mma\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Replicon.Cryptography.SCrypt.MMA\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug .NET 3.5|x64'">
     <IntDir>obj\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
-    <OutDir>$(SolutionDir)scrypt-mma\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Replicon.Cryptography.SCrypt.MMA\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug .NET 4.0|x64'">
     <IntDir>obj\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
-    <OutDir>$(SolutionDir)scrypt-mma\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Replicon.Cryptography.SCrypt.MMA\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET 3.5|Win32'">
     <IntDir>obj\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
-    <OutDir>$(SolutionDir)scrypt-mma\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Replicon.Cryptography.SCrypt.MMA\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET 4.0|Win32'">
     <IntDir>obj\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
-    <OutDir>$(SolutionDir)scrypt-mma\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Replicon.Cryptography.SCrypt.MMA\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET 3.5|x64'">
     <IntDir>obj\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
-    <OutDir>$(SolutionDir)scrypt-mma\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Replicon.Cryptography.SCrypt.MMA\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET 4.0|x64'">
     <IntDir>obj\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
-    <OutDir>$(SolutionDir)scrypt-mma\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Replicon.Cryptography.SCrypt.MMA\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug .NET 3.5|Win32'">
     <ClCompile>
@@ -363,7 +363,7 @@
     <None Include="scrypt.def" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="scrypt-mma.rc" />
+    <ResourceCompile Include="Replicon.Cryptography.SCrypt.MMA.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scrypt-mma", "scrypt-mma\scrypt-mma.vcxproj", "{A0B7CBDC-B8E9-4AAD-89D9-6FEBFCE026E9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Replicon.Cryptography.SCrypt.MMA", "Replicon.Cryptography.SCrypt.MMA\Replicon.Cryptography.SCrypt.MMA.vcxproj", "{A0B7CBDC-B8E9-4AAD-89D9-6FEBFCE026E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "scrypt", "scrypt\scrypt.csproj", "{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Replicon.Cryptography.SCrypt", "Replicon.Cryptography.SCrypt\Replicon.Cryptography.SCrypt.csproj", "{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,8 +53,8 @@ Global
 		{A0B7CBDC-B8E9-4AAD-89D9-6FEBFCE026E9}.Release .NET 4.0|Win32.Build.0 = Release .NET 4.0|Win32
 		{A0B7CBDC-B8E9-4AAD-89D9-6FEBFCE026E9}.Release .NET 4.0|x64.ActiveCfg = Release .NET 4.0|x64
 		{A0B7CBDC-B8E9-4AAD-89D9-6FEBFCE026E9}.Release .NET 4.0|x64.Build.0 = Release .NET 4.0|x64
-		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Debug .NET 3.5|Any CPU.ActiveCfg = Debug .NET 4.0|Any CPU
-		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Debug .NET 3.5|Any CPU.Build.0 = Debug .NET 4.0|Any CPU
+		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Debug .NET 3.5|Any CPU.ActiveCfg = Debug .NET 3.5|Any CPU
+		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Debug .NET 3.5|Any CPU.Build.0 = Debug .NET 3.5|Any CPU
 		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Debug .NET 3.5|Mixed Platforms.ActiveCfg = Debug .NET 3.5|Any CPU
 		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Debug .NET 3.5|Mixed Platforms.Build.0 = Debug .NET 3.5|Any CPU
 		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Debug .NET 3.5|Win32.ActiveCfg = Debug .NET 4.0|Any CPU
@@ -65,8 +65,8 @@ Global
 		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Debug .NET 4.0|Mixed Platforms.Build.0 = Debug .NET 4.0|Any CPU
 		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Debug .NET 4.0|Win32.ActiveCfg = Debug .NET 4.0|Any CPU
 		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Debug .NET 4.0|x64.ActiveCfg = Debug .NET 4.0|Any CPU
-		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Release .NET 3.5|Any CPU.ActiveCfg = Release .NET 4.0|Any CPU
-		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Release .NET 3.5|Any CPU.Build.0 = Release .NET 4.0|Any CPU
+		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Release .NET 3.5|Any CPU.ActiveCfg = Release .NET 3.5|Any CPU
+		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Release .NET 3.5|Any CPU.Build.0 = Release .NET 3.5|Any CPU
 		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Release .NET 3.5|Mixed Platforms.ActiveCfg = Release .NET 3.5|Any CPU
 		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Release .NET 3.5|Mixed Platforms.Build.0 = Release .NET 3.5|Any CPU
 		{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}.Release .NET 3.5|Win32.ActiveCfg = Release .NET 4.0|Any CPU
