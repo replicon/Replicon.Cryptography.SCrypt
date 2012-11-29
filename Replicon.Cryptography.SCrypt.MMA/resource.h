@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by scrypt-mma.rc
+// Used by Replicon.Cryptography.SCrypt.MMA.rc
 
 // Next default values for new objects
 // 
