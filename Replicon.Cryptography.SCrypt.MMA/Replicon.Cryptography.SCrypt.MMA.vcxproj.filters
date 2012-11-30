@@ -24,9 +24,6 @@
     <ClCompile Include="SCrypt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SaltParseException.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AssemblyInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -47,9 +44,6 @@
     <ClInclude Include="SCrypt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SaltParseException.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -63,7 +57,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="scrypt-mma.rc">
+    <ResourceCompile Include="Replicon.Cryptography.SCrypt.MMA.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
