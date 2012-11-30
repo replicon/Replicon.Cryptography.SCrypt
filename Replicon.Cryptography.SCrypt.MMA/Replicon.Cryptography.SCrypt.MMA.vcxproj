@@ -328,7 +328,6 @@
       <GenerateXMLDocumentationFiles Condition="'$(Configuration)|$(Platform)'=='Release .NET 3.5|Win32'">false</GenerateXMLDocumentationFiles>
       <GenerateXMLDocumentationFiles Condition="'$(Configuration)|$(Platform)'=='Release .NET 4.0|Win32'">false</GenerateXMLDocumentationFiles>
     </ClCompile>
-    <ClCompile Include="SaltParseException.cpp" />
     <ClCompile Include="SCrypt.cpp" />
     <ClCompile Include="sha256.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release .NET 3.5|Win32'">false</CompileAsManaged>
@@ -352,7 +351,6 @@
   <ItemGroup>
     <ClInclude Include="crypto_scrypt.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="SaltParseException.h" />
     <ClInclude Include="SCrypt.h" />
     <ClInclude Include="scrypt_platform.h" />
     <ClInclude Include="sha256.h" />

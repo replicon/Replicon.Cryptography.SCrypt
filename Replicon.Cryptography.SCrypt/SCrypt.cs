@@ -1,12 +1,17 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Security.Principal;
+using System.Text;
 using System.Threading;
 
 namespace Replicon.Cryptography.SCrypt
 {
-    public class SCrypt
+    /// <summary>A .NET wrapper for a native implementation of the scrypt key-derivation function.  In addition to
+    /// exposing the raw key-derivation function (DerivePassword), SCrypt also contains helper functions for a common
+    /// use-case of scrypt as a password hashing algorithm.</summary>
+    public static class SCrypt
     {
         #region mixed-mode assembly loader
 
@@ -112,8 +117,6 @@ namespace Replicon.Cryptography.SCrypt
             return null;
         }
 
-        #endregion
-
         /// <summary>
         /// CRT initialization when first accessing the mixed-mode assembly will attempt to initialize a CRT appdomain,
         /// which attempts to copy the current thread's principal.  However, because the new appdomain doesn't have
@@ -141,93 +144,194 @@ namespace Replicon.Cryptography.SCrypt
             }
         }
 
-        #region Exposed methods
+        #endregion
+        #region Random number generator
 
-        public static UInt32 DefaultSaltLengthBytes
+        private static RandomNumberGenerator randomGenerator;
+        private static object randomGeneratorLock = new object();
+
+        private static RandomNumberGenerator RandomGenerator
         {
             get
             {
-                HookupAssemblyLoader();
-                using (new NullPrincipalBlock())
-                    return WrappedDefaultSaltLengthBytes;
+                if (randomGenerator != null)
+                    return randomGenerator;
+
+                lock (randomGeneratorLock)
+                {
+                    if (randomGenerator != null)
+                        return randomGenerator;
+                    return randomGenerator = RandomNumberGenerator.Create();
+                }
             }
         }
 
-        public static UInt64 Default_N
+        #endregion
+        #region User interface
+
+        /// <summary>Default value for saltLengthBytes used by parameterless GenerateSalt, currently 16 bytes.</summary>
+        public static readonly uint DefaultSaltLengthBytes = 16;
+
+        /// <summary>Default value for N used by parameterless GenerateSalt, currently 2^14.</summary>
+        public static readonly ulong Default_N = 16384;
+
+        /// <summary>Default value for r used by parameterless GenerateSalt, currently 8.</summary>
+        public static readonly uint Default_r = 8;
+
+        /// <summary>Default value for p used by parameterless GenerateSalt, currently 1.</summary>
+        public static readonly uint Default_p = 1;
+
+        /// <summary>Default value for hashLengthBytes used by parameterless GenerateSalt, currently 32 bytes.</summary>
+        public static readonly uint DefaultHashLengthBytes = 32;
+
+        /// <summary>Generate a salt for use with HashPassword, selecting reasonable default values for scrypt
+        /// parameters that are appropriate for an interactive login verification workflow.</summary>
+        /// <remarks>Uses the default values in DefaultSaltLengthBytes, Default_N, Default_r, Default_r, and
+        /// DefaultHashLengthBytes.</remarks>
+        public static string GenerateSalt()
         {
-            get
-            {
-                HookupAssemblyLoader();
-                using (new NullPrincipalBlock())
-                    return WrappedDefault_N;
-            }
+            return GenerateSalt(DefaultSaltLengthBytes, Default_N, Default_r, Default_p, DefaultHashLengthBytes);
         }
 
-        public static UInt32 Default_r
+        /// <summary>Generate a random salt for use with HashPassword.  In addition to the random salt, the salt value
+        /// also contains the tuning parameters to use with the scrypt algorithm, as well as the size of the password
+        /// hash to generate.</summary>
+        /// <param name="saltLengthBytes">The number of bytes of random salt to generate.  The goal for the salt is
+        /// to be unique.  16 bytes gives a 2^128 possible salt options, and roughly an N in 2^64 chance of a salt
+        /// collision for N salts, which seems reasonable.  A larger salt requires more storage space, but doesn't
+        /// affect the scrypt performance significantly.</param>
+        /// <param name="N">CPU/memory cost parameter.  Must be a value 2^N.  2^14 (16384) causes a calculation time
+        /// of approximately 50-70ms on 2010 era hardware; each successive value (eg. 2^15, 2^16, ...) should
+        /// double the amount of CPU time and memory required.</param>
+        /// <param name="r">scrypt 'r' tuning parameter</param>
+        /// <param name="p">scrypt 'p' tuning parameter (parallelization parameter); a large value of p can increase
+        /// computational cost of scrypt without increasing the memory usage.</param>
+        /// <param name="hashLengthBytes">The number of bytes to store the password hash in.</param>
+        public static string GenerateSalt(uint saltLengthBytes, ulong N, uint r, uint p, uint hashLengthBytes)
         {
-            get
-            {
-                HookupAssemblyLoader();
-                using (new NullPrincipalBlock())
-                    return WrappedDefault_r;
-            }
+            var salt = new byte[saltLengthBytes];
+            RandomGenerator.GetBytes(salt);
+
+            StringBuilder builder = new StringBuilder();
+            builder.Append("$scrypt$");
+            builder.Append(N);
+            builder.Append("$");
+            builder.Append(r);
+            builder.Append("$");
+            builder.Append(p);
+            builder.Append("$");
+            builder.Append(hashLengthBytes);
+            builder.Append("$");
+            builder.Append(Convert.ToBase64String(salt));
+            builder.Append("$");
+            return builder.ToString();
         }
 
-        public static UInt32 Default_p
+        /// <summary>Generate a password hash using a newly generated salt, with default salt parameters.</summary>
+        /// <param name="password">A password to hash.</param>
+        public static string HashPassword(string password)
         {
-            get
-            {
-                HookupAssemblyLoader();
-                using (new NullPrincipalBlock())
-                    return WrappedDefault_p;
-            }
+            return HashPassword(password, GenerateSalt());
         }
 
-        public static UInt32 DefaultHashLengthBytes
+        private static SaltParseException InternalTryParseSalt(string salt, out byte[] saltBytes, out ulong N, out uint r, out uint p, out uint hashLengthBytes)
         {
-            get
-            {
-                HookupAssemblyLoader();
-                using (new NullPrincipalBlock())
-                    return WrappedDefaultHashLengthBytes;
-            }
+            saltBytes = null;
+            N = 0;
+            r = p = 0;
+            hashLengthBytes = 0;
+
+            var saltComponents = salt.Split('$');
+            if (saltComponents.Length != 8)
+                return new SaltParseException("Expected 8 dollar-sign ($) delimited salt components");
+            else if (saltComponents[0] != "" || saltComponents[1] != "scrypt")
+                return new SaltParseException("Expected $scrypt$");
+
+            if (!ulong.TryParse(saltComponents[2], out N))
+                return new SaltParseException("Failed to parse N parameter");
+            else if (!uint.TryParse(saltComponents[3], out r))
+                return new SaltParseException("Failed to parse r parameter");
+            else if (!uint.TryParse(saltComponents[4], out p))
+                return new SaltParseException("Failed to parse p parameter");
+            else if (!uint.TryParse(saltComponents[5], out hashLengthBytes))
+                return new SaltParseException("Failed to parse hashLengthBytes parameter");
+
+            saltBytes = Convert.FromBase64String(saltComponents[6]);
+
+            return null;
         }
 
-        public static String GenerateSalt()
+        /// <summary>Attempt to parse the salt component of a salt or password and return the tuning parameters
+        /// embedded in the salt.</summary>
+        /// <param name="salt">Salt or hashed password to parse.</param>
+        /// <param name="saltBytes">The randomly generated salt data.  The length will match saltLengthBytes from
+        /// GenerateSalt.</param>
+        /// <param name="N">Matching value for GenerateSalt's N parameter.</param>
+        /// <param name="r">Matching value for GenerateSalt's r parameter.</param>
+        /// <param name="p">Matching value for GenerateSalt's p parameter.</param>
+        /// <param name="hashLengthBytes">The number of bytes to store the password hash in.</param>
+        /// <returns>True if the parsing was successful, false otherwise.</returns>
+        public static bool TryParseSalt(string salt, out byte[] saltBytes, out ulong N, out uint r, out uint p, out uint hashLengthBytes)
         {
-            HookupAssemblyLoader();
-            using (new NullPrincipalBlock())
-                return WrappedGenerateSalt();
+            var error = InternalTryParseSalt(salt, out saltBytes, out N, out r, out p, out hashLengthBytes);
+            return error == null;
         }
 
-        public static String GenerateSalt(UInt32 saltLengthBytes, UInt64 N, UInt32 r, UInt32 p, UInt32 hashLengthBytes)
+        /// <summary>Parse the salt component of a salt or password and return the tuning parameters embedded in the
+        /// salt.</summary>
+        /// <exception cref="Replicon.Cryptography.SCrypt.SaltParseException">Throws SaltParseException if an error
+        /// occurs while parsing the salt.</exception>
+        /// <param name="salt">Salt or hashed password to parse.</param>
+        /// <param name="saltBytes">The randomly generated salt data.  The length will match saltLengthBytes from
+        /// GenerateSalt.</param>
+        /// <param name="N">Matching value for GenerateSalt's N parameter.</param>
+        /// <param name="r">Matching value for GenerateSalt's r parameter.</param>
+        /// <param name="p">Matching value for GenerateSalt's p parameter.</param>
+        /// <param name="hashLengthBytes">The number of bytes to store the password hash in.</param>
+        public static void ParseSalt(string salt, out byte[] saltBytes, out ulong N, out uint r, out uint p, out uint hashLengthBytes)
         {
-            HookupAssemblyLoader();
-            using (new NullPrincipalBlock())
-                return WrappedGenerateSalt(saltLengthBytes, N, r, p, hashLengthBytes);
+            var error = InternalTryParseSalt(salt, out saltBytes, out N, out r, out p, out hashLengthBytes);
+            if (error != null)
+                throw error;
         }
 
-        public static String HashPassword(String password)
+        /// <summary>Generate a password hash using a specific password salt.</summary>
+        /// <param name="password">A password to hash.</param>
+        /// <param name="salt">Salt to hash the password with.  This is often a password hash from a previous
+        /// HashPassword call, which contains the salt of the original password call; in that case, the returned
+        /// hash will be identical to the salt parameter if the password is the same password as the original.</param>
+        public static string HashPassword(string password, string salt)
         {
-            HookupAssemblyLoader();
-            using (new NullPrincipalBlock())
-                return WrappedHashPassword(password);
+            ulong N;
+            uint r;
+            uint p;
+            uint hashLengthBytes;
+            byte[] salt_data;
+
+            ParseSalt(salt, out salt_data, out N, out r, out p, out hashLengthBytes);
+
+            var password_data = Encoding.UTF8.GetBytes(password);
+            var hash_data = DeriveKey(password_data, salt_data, N, r, p, hashLengthBytes);
+
+            return salt.Substring(0, salt.LastIndexOf('$') + 1) + Convert.ToBase64String(hash_data);
         }
 
-        public static String HashPassword(String password, String salt)
+        /// <summary>Verify that a given password matches a given hash.</summary>
+        public static bool Verify(string password, string hash)
         {
-            HookupAssemblyLoader();
-            using (new NullPrincipalBlock())
-                return WrappedHashPassword(password, salt);
+            return hash == HashPassword(password, hash);
         }
 
-        public static bool Verify(String password, String hash)
-        {
-            HookupAssemblyLoader();
-            using (new NullPrincipalBlock())
-                return WrappedVerify(password, hash);
-        }
-
+        /// <summary>The 'raw' scrypt key-derivation function.</summary>
+        /// <param name="password">The password bytes to generate the key based upon.</param>
+        /// <param name="salt">Random salt bytes to make the derived key unique.</param>
+        /// <param name="N">CPU/memory cost parameter.  Must be a value 2^N.  2^14 (16384) causes a calculation time
+        /// of approximately 50-70ms on 2010 era hardware; each successive value (eg. 2^15, 2^16, ...) should
+        /// double the amount of CPU time and memory required.</param>
+        /// <param name="r">scrypt 'r' tuning parameter</param>
+        /// <param name="p">scrypt 'p' tuning parameter (parallelization parameter); a large value of p can increase
+        /// computational cost of scrypt without increasing the memory usage.</param>
+        /// <param name="derivedKeyLengthBytes">The number of bytes of key to derive.</param>
         public static Byte[] DeriveKey(Byte[] password, Byte[] salt, UInt64 N, UInt32 r, UInt32 p, UInt32 derivedKeyLengthBytes)
         {
             HookupAssemblyLoader();
@@ -242,52 +346,6 @@ namespace Replicon.Cryptography.SCrypt
          * Our exposed methods can't have a direct Replicon.Cryptography.SCrypt.MMA reference in them, since they need to hookup the fancy
          * assembly resolver before it's referenced.  Hence we have these wrapped methods that look pointless.
          */
-
-        private static UInt32 WrappedDefaultSaltLengthBytes
-        {
-            get { return Replicon.Cryptography.SCrypt.MMA.SCrypt.DefaultSaltLengthBytes; }
-        }
-        private static UInt64 WrappedDefault_N
-        {
-            get { return Replicon.Cryptography.SCrypt.MMA.SCrypt.Default_N; }
-        }
-        private static UInt32 WrappedDefault_r
-        {
-            get { return Replicon.Cryptography.SCrypt.MMA.SCrypt.Default_r; }
-        }
-        private static UInt32 WrappedDefault_p
-        {
-            get { return Replicon.Cryptography.SCrypt.MMA.SCrypt.Default_p; }
-        }
-        private static UInt32 WrappedDefaultHashLengthBytes
-        {
-            get { return Replicon.Cryptography.SCrypt.MMA.SCrypt.DefaultHashLengthBytes; }
-        }
-
-        private static String WrappedGenerateSalt()
-        {
-            return Replicon.Cryptography.SCrypt.MMA.SCrypt.GenerateSalt();
-        }
-
-        private static String WrappedGenerateSalt(UInt32 saltLengthBytes, UInt64 N, UInt32 r, UInt32 p, UInt32 hashLengthBytes)
-        {
-            return Replicon.Cryptography.SCrypt.MMA.SCrypt.GenerateSalt(saltLengthBytes, N, r, p, hashLengthBytes);
-        }
-
-        private static String WrappedHashPassword(String password)
-        {
-            return Replicon.Cryptography.SCrypt.MMA.SCrypt.HashPassword(password);
-        }
-
-        private static String WrappedHashPassword(String password, String salt)
-        {
-            return Replicon.Cryptography.SCrypt.MMA.SCrypt.HashPassword(password, salt);
-        }
-
-        private static bool WrappedVerify(String password, String hash)
-        {
-            return Replicon.Cryptography.SCrypt.MMA.SCrypt.Verify(password, hash);
-        }
 
         private static Byte[] WrappedDeriveKey(Byte[] password, Byte[] salt, UInt64 N, UInt32 r, UInt32 p, UInt32 derivedKeyLengthBytes)
         {
