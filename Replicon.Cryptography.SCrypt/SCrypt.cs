@@ -131,23 +131,26 @@ namespace Replicon.Cryptography.SCrypt
 
             public NullPrincipalBlock()
             {
-                // We really need to null out the principal in order to guarentee CRT initialization will work.
-                // It seems safe to assert the ControlPrincipal permission here because of the limited scope that
-                // this block will operate under, where all it can do is run the SCrypt library.
-                var controlPrincipalPermission = new SecurityPermission(SecurityPermissionFlag.ControlPrincipal);
-                controlPrincipalPermission.Assert();
-
                 this.storedPrincipal = Thread.CurrentPrincipal;
-                Thread.CurrentPrincipal = null;
+                SafeSetPrincipal(null);
             }
 
             public void Dispose()
             {
                 if (storedPrincipal != null)
                 {
-                    Thread.CurrentPrincipal = storedPrincipal;
+                    SafeSetPrincipal(storedPrincipal);
                     storedPrincipal = null;
                 }
+            }
+
+            private void SafeSetPrincipal(IPrincipal principal)
+            {
+                // We really need to null out the principal in order to guarentee CRT initialization will work.
+                // It seems safe to assert the ControlPrincipal permission here because of the limited scope that
+                // this block will operate under, where all it can do is run the SCrypt library.
+                var controlPrincipalPermission = new SecurityPermission(SecurityPermissionFlag.ControlPrincipal);
+                controlPrincipalPermission.Assert();
             }
         }
 
