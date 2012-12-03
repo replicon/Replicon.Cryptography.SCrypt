@@ -151,6 +151,7 @@ namespace Replicon.Cryptography.SCrypt
                 // this block will operate under, where all it can do is run the SCrypt library.
                 var controlPrincipalPermission = new SecurityPermission(SecurityPermissionFlag.ControlPrincipal);
                 controlPrincipalPermission.Assert();
+                Thread.CurrentPrincipal = principal;
             }
         }
 
