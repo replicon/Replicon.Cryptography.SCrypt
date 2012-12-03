@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
+using System.Security.Permissions;
 
 namespace Replicon.Cryptography.SCrypt
 {
@@ -126,20 +127,30 @@ namespace Replicon.Cryptography.SCrypt
         /// </summary>
         private class NullPrincipalBlock : IDisposable
         {
+            private bool controllingPrincipal;
             private IPrincipal storedPrincipal;
 
             public NullPrincipalBlock()
             {
-                this.storedPrincipal = Thread.CurrentPrincipal;
-                Thread.CurrentPrincipal = null;
+                // Only attempt to control the principal if we have permission to.  If not, then NullPrincipalBlock
+                // will have no effect, which will work just fine if either we don't do CRT initialization, or we
+                // have a principal that will be deserializable in CRT initialization.
+                var controlPrincipalPermission = new SecurityPermission(SecurityPermissionFlag.ControlPrincipal);
+                controllingPrincipal = controlPrincipalPermission.IsSubsetOf(null);
+
+                if (controllingPrincipal)
+                {
+                    this.storedPrincipal = Thread.CurrentPrincipal;
+                    Thread.CurrentPrincipal = null;
+                }
             }
 
             public void Dispose()
             {
-                if (this.storedPrincipal != null)
+                if (storedPrincipal != null && controllingPrincipal)
                 {
-                    Thread.CurrentPrincipal = this.storedPrincipal;
-                    this.storedPrincipal = null;
+                    Thread.CurrentPrincipal = storedPrincipal;
+                    storedPrincipal = null;
                 }
             }
         }
