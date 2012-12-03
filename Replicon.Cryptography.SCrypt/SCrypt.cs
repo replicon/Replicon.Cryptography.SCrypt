@@ -127,27 +127,23 @@ namespace Replicon.Cryptography.SCrypt
         /// </summary>
         private class NullPrincipalBlock : IDisposable
         {
-            private bool controllingPrincipal;
             private IPrincipal storedPrincipal;
 
             public NullPrincipalBlock()
             {
-                // Only attempt to control the principal if we have permission to.  If not, then NullPrincipalBlock
-                // will have no effect, which will work just fine if either we don't do CRT initialization, or we
-                // have a principal that will be deserializable in CRT initialization.
+                // We really need to null out the principal in order to guarentee CRT initialization will work.
+                // It seems safe to assert the ControlPrincipal permission here because of the limited scope that
+                // this block will operate under, where all it can do is run the SCrypt library.
                 var controlPrincipalPermission = new SecurityPermission(SecurityPermissionFlag.ControlPrincipal);
-                controllingPrincipal = controlPrincipalPermission.IsSubsetOf(null);
+                controlPrincipalPermission.Assert();
 
-                if (controllingPrincipal)
-                {
-                    this.storedPrincipal = Thread.CurrentPrincipal;
-                    Thread.CurrentPrincipal = null;
-                }
+                this.storedPrincipal = Thread.CurrentPrincipal;
+                Thread.CurrentPrincipal = null;
             }
 
             public void Dispose()
             {
-                if (storedPrincipal != null && controllingPrincipal)
+                if (storedPrincipal != null)
                 {
                     Thread.CurrentPrincipal = storedPrincipal;
                     storedPrincipal = null;
