@@ -118,43 +118,6 @@ namespace Replicon.Cryptography.SCrypt
             return null;
         }
 
-        /// <summary>
-        /// CRT initialization when first accessing the mixed-mode assembly will attempt to initialize a CRT appdomain,
-        /// which attempts to copy the current thread's principal.  However, because the new appdomain doesn't have
-        /// a configuration matching the current appdomain, it often can't find the assemblies required to deserialize
-        /// the principal.  To work around this, we just null-out the thread principal when calling the mixed-mode
-        /// assemblies.
-        /// </summary>
-        private class NullPrincipalBlock : IDisposable
-        {
-            private IPrincipal storedPrincipal;
-
-            public NullPrincipalBlock()
-            {
-                this.storedPrincipal = Thread.CurrentPrincipal;
-                SafeSetPrincipal(null);
-            }
-
-            public void Dispose()
-            {
-                if (storedPrincipal != null)
-                {
-                    SafeSetPrincipal(storedPrincipal);
-                    storedPrincipal = null;
-                }
-            }
-
-            private void SafeSetPrincipal(IPrincipal principal)
-            {
-                // We really need to null out the principal in order to guarentee CRT initialization will work.
-                // It seems safe to assert the ControlPrincipal permission here because of the limited scope that
-                // this block will operate under, where all it can do is run the SCrypt library.
-                var controlPrincipalPermission = new SecurityPermission(SecurityPermissionFlag.ControlPrincipal);
-                controlPrincipalPermission.Assert();
-                Thread.CurrentPrincipal = principal;
-            }
-        }
-
         #endregion
         #region Random number generator
 
@@ -346,12 +309,39 @@ namespace Replicon.Cryptography.SCrypt
         public static Byte[] DeriveKey(Byte[] password, Byte[] salt, UInt64 N, UInt32 r, UInt32 p, UInt32 derivedKeyLengthBytes)
         {
             HookupAssemblyLoader();
-            using (new NullPrincipalBlock())
-                return WrappedDeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
+            return EscapeExecutionContext(() => WrappedDeriveKey(password, salt, N, r, p, derivedKeyLengthBytes));
         }
 
         #endregion
         #region Wrapped methods
+
+        /// <summary>
+        /// CRT initialization when first accessing the mixed-mode assembly will attempt to initialize a CRT appdomain,
+        /// which attempts to copy the current thread's execution context.  However, because the new appdomain doesn't
+        /// have a configuration matching the current appdomain, it often can't find the assemblies required to
+        /// deserialize the principal, or other objects stored in the execution context.  To work around this, we
+        /// attempt to "escape" our execution context by spawning a new thread.  I welcome ideas for how to make this
+        /// more efficient.
+        /// </summary>
+        private static T EscapeExecutionContext<T>(Func<T> callback)
+        {
+            var suppressExecutionContextFlow = ExecutionContext.SuppressFlow();
+            try
+            {
+                T retval = default(T);
+                var thread = new Thread(() =>
+                {
+                    retval = callback();
+                });
+                thread.Start();
+                thread.Join();
+                return retval;
+            }
+            finally
+            {
+                suppressExecutionContextFlow.Undo();
+            }
+        }
 
         /*
          * Our exposed methods can't have a direct Replicon.Cryptography.SCrypt.MMA reference in them, since they need to hookup the fancy
