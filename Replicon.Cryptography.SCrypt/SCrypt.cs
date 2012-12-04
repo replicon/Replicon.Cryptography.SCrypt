@@ -329,12 +329,30 @@ namespace Replicon.Cryptography.SCrypt
             try
             {
                 T retval = default(T);
+                Exception threadException = null;
                 var thread = new Thread(() =>
                 {
-                    retval = callback();
+                    try
+                    {
+                        try
+                        {
+                            retval = callback();
+                        }
+                        catch (Exception e)
+                        {
+                            threadException = e;
+                        }
+                    }
+                    catch
+                    {
+                        // Prevent unhandled exceptions from exiting thread under any circumstances, to ensure that
+                        // process crashes cannot occur.
+                    }
                 });
                 thread.Start();
                 thread.Join();
+                if (threadException != null)
+                    throw new TargetInvocationException(threadException);
                 return retval;
             }
             finally
