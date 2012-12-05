@@ -36,6 +36,10 @@ namespace Replicon
 
                     return derived_key;
                 }
+
+                void SCrypt::ExpensiveCrtInitialization()
+                {
+                }
             }
         }
     }

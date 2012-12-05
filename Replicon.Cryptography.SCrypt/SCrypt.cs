@@ -26,6 +26,7 @@ namespace Replicon.Cryptography.SCrypt
         private static object hookupLock = new object();
         private static bool hookupComplete = false;
         private static string tempPath = null;
+        private static bool expensiveCrtInitialization = false;
 
         private static void HookupAssemblyLoader()
         {
@@ -116,6 +117,72 @@ namespace Replicon.Cryptography.SCrypt
             }
 
             return null;
+        }
+
+        private static void EnsureCrtInitialized()
+        {
+            if (!expensiveCrtInitialization)
+            {
+                EscapeExecutionContext(() => { Replicon.Cryptography.SCrypt.MMA.SCrypt.ExpensiveCrtInitialization(); return false; });
+                expensiveCrtInitialization = true;
+            }
+        }
+
+        private static void SafeSetPrincipal(IPrincipal principal)
+        {
+            // We really need to null out the principal in order to guarentee CRT initialization will work.
+            // It seems safe to assert the ControlPrincipal permission here because of the limited scope that
+            // this block will operate under, where all it can do is run the SCrypt library.
+            var controlPrincipalPermission = new SecurityPermission(SecurityPermissionFlag.ControlPrincipal);
+            controlPrincipalPermission.Assert();	  	
+            Thread.CurrentPrincipal = principal;
+        }
+
+        /// <summary>
+        /// CRT initialization when first accessing the mixed-mode assembly will attempt to initialize a CRT appdomain,
+        /// which attempts to copy the current thread's execution context.  However, because the new appdomain doesn't
+        /// have a configuration matching the current appdomain, it often can't find the assemblies required to
+        /// deserialize the principal, or other objects stored in the execution context.  To work around this, we
+        /// attempt to "escape" our execution context by spawning a new thread.  I welcome ideas for how to make this
+        /// more efficient.
+        /// </summary>
+        private static T EscapeExecutionContext<T>(Func<T> callback)
+        {
+            var suppressExecutionContextFlow = ExecutionContext.SuppressFlow();
+            try
+            {
+                T retval = default(T);
+                Exception threadException = null;
+                var thread = new Thread(() =>
+                {
+                    try
+                    {
+                        try
+                        {
+                            SafeSetPrincipal(null);
+                            retval = callback();
+                        }
+                        catch (Exception e)
+                        {
+                            threadException = e;
+                        }
+                    }
+                    catch
+                    {
+                        // Prevent unhandled exceptions from exiting thread under any circumstances, to ensure that
+                        // process crashes cannot occur.
+                    }
+                });
+                thread.Start();
+                thread.Join();
+                if (threadException != null)
+                    throw new TargetInvocationException(threadException);
+                return retval;
+            }
+            finally
+            {
+                suppressExecutionContextFlow.Undo();
+            }
         }
 
         #endregion
@@ -309,57 +376,12 @@ namespace Replicon.Cryptography.SCrypt
         public static Byte[] DeriveKey(Byte[] password, Byte[] salt, UInt64 N, UInt32 r, UInt32 p, UInt32 derivedKeyLengthBytes)
         {
             HookupAssemblyLoader();
-            return EscapeExecutionContext(() => WrappedDeriveKey(password, salt, N, r, p, derivedKeyLengthBytes));
+            EnsureCrtInitialized();
+            return WrappedDeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
         }
 
         #endregion
         #region Wrapped methods
-
-        /// <summary>
-        /// CRT initialization when first accessing the mixed-mode assembly will attempt to initialize a CRT appdomain,
-        /// which attempts to copy the current thread's execution context.  However, because the new appdomain doesn't
-        /// have a configuration matching the current appdomain, it often can't find the assemblies required to
-        /// deserialize the principal, or other objects stored in the execution context.  To work around this, we
-        /// attempt to "escape" our execution context by spawning a new thread.  I welcome ideas for how to make this
-        /// more efficient.
-        /// </summary>
-        private static T EscapeExecutionContext<T>(Func<T> callback)
-        {
-            var suppressExecutionContextFlow = ExecutionContext.SuppressFlow();
-            try
-            {
-                T retval = default(T);
-                Exception threadException = null;
-                var thread = new Thread(() =>
-                {
-                    try
-                    {
-                        try
-                        {
-                            retval = callback();
-                        }
-                        catch (Exception e)
-                        {
-                            threadException = e;
-                        }
-                    }
-                    catch
-                    {
-                        // Prevent unhandled exceptions from exiting thread under any circumstances, to ensure that
-                        // process crashes cannot occur.
-                    }
-                });
-                thread.Start();
-                thread.Join();
-                if (threadException != null)
-                    throw new TargetInvocationException(threadException);
-                return retval;
-            }
-            finally
-            {
-                suppressExecutionContextFlow.Undo();
-            }
-        }
 
         /*
          * Our exposed methods can't have a direct Replicon.Cryptography.SCrypt.MMA reference in them, since they need to hookup the fancy
