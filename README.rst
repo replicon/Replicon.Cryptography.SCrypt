@@ -5,11 +5,38 @@ This library is a wrapper for the scrypt key-deriviation function (http://www.ta
 Colin Percival.  The core of the library is a copy of the scrypt KDF routines written in C and distributed by Colin.
 We've added a .NET wrapper class and done a bit of work to compile this into a mixed-mode .NET assembly.
 
-A Mixed-Mode Assembly?  Why?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Download Binaries
+~~~~~~~~~~~~~~~~~
 
-It's fast.  At the time of writing, it executes the scrypt KDF is about 1/12th the execution time of a pure C#
-implementation.  That's a pretty significant time difference.
+Pre-compiled binaries are available for download:
+
+`scrypt-net35-1.1.6.11.zip <https://dl.dropbox.com/s/334nvbglrdeagdy/scrypt-net35-1.1.6.11.zip?dl=1>`_
+    Binary build of version 1.1.6.11 for .NET 3.5.
+
+`scrypt-net40-1.1.6.11.zip <https://dl.dropbox.com/s/0kyv4gjz9i47ehb/scrypt-net40-1.1.6.11.zip?dl=1>`_
+    Binary build of version 1.1.6.11 for .NET 4.0.
+
+Why the weird mixed-mode assembly, and C++/CLI stuff?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Well, a few reasons:
+
+* I don't want to write the scrypt algorithm myself to port it to another language.  This release directly
+  incorporates Colin Percival's scrypt implementation, and can be easily updated when he releases updates.
+
+* It's fast.  At the time of writing, it executes the scrypt KDF is about 1/12th the execution time of a
+  pure C# implementation (namely, CryptSharp's).  That's a pretty significant time difference.
+
+* Even with an ideal C# implementation, you couldn't use SIMD (eg. SSE) instructions.
+
+* A mixed-mode assembly is easier than PInvoke when you want to dynamically load either a Win32 or
+  x64 native library.
+
+So, all those reasons combine to create this library in this form.  I would eventually like to make the backend
+implementation dynamically selected so that a C# implementation could be used in environments where native
+is not possible (eg. Mono), but I think that the mixed-mode approach will probably stick around as the fastest
+implementation.
+
 
 API Documentation
 ~~~~~~~~~~~~~~~~~
