@@ -21,6 +21,7 @@ namespace Replicon.Cryptography.SCrypt
         private static object hookupLock = new object();
         private static bool hookupComplete = false;
         private static string tempPath = null;
+        private static bool expensiveCrtInitialization = false;
 
         private static void HookupAssemblyLoader()
         {
@@ -113,40 +114,69 @@ namespace Replicon.Cryptography.SCrypt
             return null;
         }
 
+        private static void EnsureCrtInitialized()
+        {
+            if (!expensiveCrtInitialization)
+            {
+                EscapeExecutionContext(() => { Replicon.Cryptography.SCrypt.MMA.SCrypt.ExpensiveCrtInitialization(); return false; });
+                expensiveCrtInitialization = true;
+            }
+        }
+
+        private static void SafeSetPrincipal(IPrincipal principal)
+        {
+            // We really need to null out the principal in order to guarentee CRT initialization will work.
+            // It seems safe to assert the ControlPrincipal permission here because of the limited scope that
+            // this block will operate under, where all it can do is run the SCrypt library.
+            var controlPrincipalPermission = new SecurityPermission(SecurityPermissionFlag.ControlPrincipal);
+            controlPrincipalPermission.Assert();
+            Thread.CurrentPrincipal = principal;
+        }
+
         /// <summary>
         /// CRT initialization when first accessing the mixed-mode assembly will attempt to initialize a CRT appdomain,
-        /// which attempts to copy the current thread's principal.  However, because the new appdomain doesn't have
-        /// a configuration matching the current appdomain, it often can't find the assemblies required to deserialize
-        /// the principal.  To work around this, we just null-out the thread principal when calling the mixed-mode
-        /// assemblies.
+        /// which attempts to copy the current thread's execution context.  However, because the new appdomain doesn't
+        /// have a configuration matching the current appdomain, it often can't find the assemblies required to
+        /// deserialize the principal, or other objects stored in the execution context.  To work around this, we
+        /// attempt to "escape" our execution context by spawning a new thread.  I welcome ideas for how to make this
+        /// more efficient.
         /// </summary>
-        private class NullPrincipalBlock : IDisposable
+        private static T EscapeExecutionContext<T>(Func<T> callback)
         {
-            private IPrincipal storedPrincipal;
-
-            public NullPrincipalBlock()
+            var suppressExecutionContextFlow = ExecutionContext.SuppressFlow();
+            try
             {
-                this.storedPrincipal = Thread.CurrentPrincipal;
-                SafeSetPrincipal(null);
-            }
-
-            public void Dispose()
-            {
-                if (storedPrincipal != null)
+                T retval = default(T);
+                Exception threadException = null;
+                var thread = new Thread(() =>
                 {
-                    SafeSetPrincipal(storedPrincipal);
-                    storedPrincipal = null;
-                }
+                    try
+                    {
+                        try
+                        {
+                            SafeSetPrincipal(null);
+                            retval = callback();
+                        }
+                        catch (Exception e)
+                        {
+                            threadException = e;
+                        }
+                    }
+                    catch
+                    {
+                        // Prevent unhandled exceptions from exiting thread under any circumstances, to ensure that
+                        // process crashes cannot occur.
+                    }
+                });
+                thread.Start();
+                thread.Join();
+                if (threadException != null)
+                    throw new TargetInvocationException(threadException);
+                return retval;
             }
-
-            private void SafeSetPrincipal(IPrincipal principal)
+            finally
             {
-                // We really need to null out the principal in order to guarentee CRT initialization will work.
-                // It seems safe to assert the ControlPrincipal permission here because of the limited scope that
-                // this block will operate under, where all it can do is run the SCrypt library.
-                var controlPrincipalPermission = new SecurityPermission(SecurityPermissionFlag.ControlPrincipal);
-                controlPrincipalPermission.Assert();
-                Thread.CurrentPrincipal = principal;
+                suppressExecutionContextFlow.Undo();
             }
         }
 
@@ -156,8 +186,8 @@ namespace Replicon.Cryptography.SCrypt
         public byte[] DeriveKey(byte[] password, byte[] salt, ulong N, uint r, uint p, uint derivedKeyLengthBytes)
         {
             HookupAssemblyLoader();
-            using (new NullPrincipalBlock())
-                return WrappedDeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
+            EnsureCrtInitialized();
+            return WrappedDeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
         }
 
         private byte[] WrappedDeriveKey(byte[] password, byte[] salt, ulong N, uint r, uint p, uint derivedKeyLengthBytes)

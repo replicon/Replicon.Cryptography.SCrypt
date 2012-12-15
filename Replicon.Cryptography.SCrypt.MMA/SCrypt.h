@@ -14,6 +14,7 @@ namespace Replicon
                 {
                 public:
                     static array<Byte>^ DeriveKey(array<Byte>^ password, array<Byte>^ salt, UInt64 N, UInt32 r, UInt32 p, UInt32 derivedKeyLengthBytes);
+                    static void ExpensiveCrtInitialization();
                 };
             }
         }
