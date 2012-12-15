@@ -69,6 +69,11 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultPasswordHash.cs" />
+    <Compile Include="Factory.cs" />
+    <Compile Include="IKeyDerivationFunction.cs" />
+    <Compile Include="IPasswordHash.cs" />
+    <Compile Include="MixedModeAssemblyKeyDerivationFunction.cs" />
     <Compile Include="SaltParseException.cs" />
     <Compile Include="SCrypt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
