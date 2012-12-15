@@ -9,3 +9,4 @@ x64
 obj
 Replicon.Cryptography.SCrypt/bin
 Replicon.Cryptography.SCrypt.snk
+Replicon.Cryptography.SCrypt.Tests/bin
