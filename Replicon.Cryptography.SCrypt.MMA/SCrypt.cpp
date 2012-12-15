@@ -18,9 +18,17 @@ namespace Replicon
                     // case until it's fixed.
                     if (N == 1)
                         throw gcnew Exception("scrypt-mma crashes when using N=1, try using a different value or dig into the code and help fix this crash and remove this error");
+                    if (derivedKeyLengthBytes == 0)
+                        // Probably not a very useful derived key, but it's what you asked for!
+                        return gcnew array<Byte>(0);
 
-                    pin_ptr<uint8_t> password_ptr = &password[0];
-                    pin_ptr<uint8_t> salt_ptr = &salt[0];
+                    pin_ptr<uint8_t> password_ptr = nullptr;
+                    if (password->Length > 0)
+                        password_ptr = &password[0];
+
+                    pin_ptr<uint8_t> salt_ptr = nullptr;
+                    if (salt->Length > 0)
+                        salt_ptr = &salt[0];
 
                     array<Byte>^ derived_key = gcnew array<Byte>(derivedKeyLengthBytes);
                     pin_ptr<uint8_t> derived_key_ptr = &derived_key[0];
