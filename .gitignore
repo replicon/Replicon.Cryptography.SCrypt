@@ -8,3 +8,4 @@ Win32
 x64
 obj
 Replicon.Cryptography.SCrypt/bin
+Replicon.Cryptography.SCrypt.snk

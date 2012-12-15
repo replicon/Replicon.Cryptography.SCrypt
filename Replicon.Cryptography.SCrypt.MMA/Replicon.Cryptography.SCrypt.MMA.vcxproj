@@ -251,6 +251,9 @@
       <AdditionalDependencies>
       </AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>sn.exe -R "$(TargetPath)" "$(SolutionDir)Replicon.Cryptography.SCrypt.snk"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET 4.0|Win32'">
     <ClCompile>
@@ -269,6 +272,9 @@
       <AdditionalDependencies>
       </AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>sn.exe -R "$(TargetPath)" "$(SolutionDir)Replicon.Cryptography.SCrypt.snk"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET 3.5|x64'">
     <ClCompile>
@@ -288,6 +294,9 @@
       <AdditionalDependencies>
       </AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>sn.exe -R "$(TargetPath)" "$(SolutionDir)Replicon.Cryptography.SCrypt.snk"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET 4.0|x64'">
     <ClCompile>
@@ -307,6 +316,9 @@
       <AdditionalDependencies>
       </AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>sn.exe -R "$(TargetPath)" "$(SolutionDir)Replicon.Cryptography.SCrypt.snk"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
