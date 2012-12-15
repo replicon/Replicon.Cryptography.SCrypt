@@ -33,3 +33,6 @@ using namespace System::Runtime::InteropServices;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("1.1.6.11")];
 [assembly: AssemblyFileVersion("1.1.6.11")];
+
+[assembly: AssemblyKeyFileAttribute("..\\Replicon.Cryptography.SCrypt.Public.snk")];
+[assembly: AssemblyDelaySignAttribute(true)];
