@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Permissions;
 using System.Security.Principal;
 using System.Threading;
@@ -190,6 +191,9 @@ namespace Replicon.Cryptography.SCrypt
             return WrappedDeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
         }
 
+        // Ensure the CLR does not inline this method; doing so would prevent HookupAssemblyLoader from occuring
+        // before the MMA assembly reference needs to be evaluated.
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private byte[] WrappedDeriveKey(byte[] password, byte[] salt, ulong N, uint r, uint p, uint derivedKeyLengthBytes)
         {
             return Replicon.Cryptography.SCrypt.MMA.SCrypt.DeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
