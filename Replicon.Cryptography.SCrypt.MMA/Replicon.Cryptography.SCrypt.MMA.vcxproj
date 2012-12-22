@@ -375,6 +375,16 @@
   <ItemGroup>
     <ResourceCompile Include="Replicon.Cryptography.SCrypt.MMA.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Replicon.Cryptography.SCrypt\Replicon.Cryptography.SCrypt.csproj">
+      <Project>{ced9b1a4-a1d5-4e52-b3a3-80608ea484e6}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

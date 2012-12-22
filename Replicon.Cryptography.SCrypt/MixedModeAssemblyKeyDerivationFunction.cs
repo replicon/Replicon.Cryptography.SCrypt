@@ -22,7 +22,9 @@ namespace Replicon.Cryptography.SCrypt
         private static object hookupLock = new object();
         private static bool hookupComplete = false;
         private static string tempPath = null;
+        private static object expensiveCrtInitializationLock = new object();
         private static bool expensiveCrtInitialization = false;
+        private static IKeyDerivationFunction nativeKeyDerivationFunction = null;
 
         private static void HookupAssemblyLoader()
         {
@@ -117,9 +119,24 @@ namespace Replicon.Cryptography.SCrypt
 
         private static void EnsureCrtInitialized()
         {
-            if (!expensiveCrtInitialization)
+            if (expensiveCrtInitialization)
+                return;
+
+            lock (expensiveCrtInitializationLock)
             {
-                EscapeExecutionContext(() => { Replicon.Cryptography.SCrypt.MMA.SCrypt.ExpensiveCrtInitialization(); return false; });
+                if (expensiveCrtInitialization)
+                    return;
+
+                nativeKeyDerivationFunction = EscapeExecutionContext(() =>
+                { 
+                    Assembly assembly;
+                    if (IntPtr.Size == 4)
+                        assembly = Assembly.Load("Replicon.Cryptography.SCrypt.MMA, Version=1.1.6.13, Culture=neutral, PublicKeyToken=4e0c787cc79e77b2, processorArchitecture=x86");
+                    else
+                        assembly = Assembly.Load("Replicon.Cryptography.SCrypt.MMA, Version=1.1.6.13, Culture=neutral, PublicKeyToken=4e0c787cc79e77b2, processorArchitecture=amd64");
+                    var type = assembly.GetType("Replicon.Cryptography.SCrypt.MMA.SCrypt");
+                    return (IKeyDerivationFunction)Activator.CreateInstance(type);
+                });
                 expensiveCrtInitialization = true;
             }
         }
@@ -188,15 +205,7 @@ namespace Replicon.Cryptography.SCrypt
         {
             HookupAssemblyLoader();
             EnsureCrtInitialized();
-            return WrappedDeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
-        }
-
-        // Ensure the CLR does not inline this method; doing so would prevent HookupAssemblyLoader from occuring
-        // before the MMA assembly reference needs to be evaluated.
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private byte[] WrappedDeriveKey(byte[] password, byte[] salt, ulong N, uint r, uint p, uint derivedKeyLengthBytes)
-        {
-            return Replicon.Cryptography.SCrypt.MMA.SCrypt.DeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
+            return nativeKeyDerivationFunction.DeriveKey(password, salt, N, r, p, derivedKeyLengthBytes);
         }
 
         #endregion

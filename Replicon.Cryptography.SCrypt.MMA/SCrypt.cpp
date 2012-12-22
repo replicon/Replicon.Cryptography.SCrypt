@@ -12,6 +12,10 @@ namespace Replicon
         {
             namespace MMA
             {
+                SCrypt::SCrypt()
+                {
+                }
+
                 array<Byte>^ SCrypt::DeriveKey(array<Byte>^ password, array<Byte>^ salt, UInt64 N, UInt32 r, UInt32 p, UInt32 derivedKeyLengthBytes)
                 {
                     // Known issue: N=1 causes crash in crypto_scrypt.  At least we can provide a directed error message for this
@@ -43,10 +47,6 @@ namespace Replicon
                         throw gcnew InvalidOperationException("crypto_scrypt internal error");
 
                     return derived_key;
-                }
-
-                void SCrypt::ExpensiveCrtInitialization()
-                {
                 }
             }
         }

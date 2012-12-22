@@ -79,13 +79,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Replicon.Cryptography.SCrypt.MMA\Replicon.Cryptography.SCrypt.MMA.vcxproj">
-      <Project>{A0B7CBDC-B8E9-4AAD-89D9-6FEBFCE026E9}</Project>
-      <Name>Replicon.Cryptography.SCrypt.MMA</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="..\Replicon.Cryptography.SCrypt.MMA\Win32\Release .NET 4.0\Replicon.Cryptography.SCrypt.MMA.pdb" Condition="$(Configuration) == 'Debug .NET 4.0' Or $(Configuration) == 'Release .NET 4.0'">
       <Link>Replicon.Cryptography.SCrypt.MMA-win32.pdb</Link>
     </EmbeddedResource>
