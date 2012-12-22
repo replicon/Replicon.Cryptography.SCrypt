@@ -10,11 +10,11 @@ Download Binaries
 
 Pre-compiled binaries are available for download:
 
-`scrypt-net35-1.1.6.12.zip <https://dl.dropbox.com/s/ik5ats7b8f7sguv/scrypt-net35-1.1.6.12.zip?dl=1>`_
-    Binary build of version 1.1.6.12 for .NET 3.5.
+`scrypt-net35-1.1.6.13.zip <https://dl.dropbox.com/s/53a4a6efl6hnb45/scrypt-net35-1.1.6.13.zip?dl=1>`_
+    Binary build of version 1.1.6.13 for .NET 3.5.
 
-`scrypt-net40-1.1.6.12.zip <https://dl.dropbox.com/s/tmu8kh9c4gfuv4l/scrypt-net40-1.1.6.12.zip?dl=1>`_
-    Binary build of version 1.1.6.12 for .NET 4.0.
+`scrypt-net40-1.1.6.13.zip <https://dl.dropbox.com/s/kppdambw3wz6xix/scrypt-net40-1.1.6.13.zip?dl=1>`_
+    Binary build of version 1.1.6.13 for .NET 4.0.
 
 Why the weird mixed-mode assembly, and C++/CLI stuff?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
