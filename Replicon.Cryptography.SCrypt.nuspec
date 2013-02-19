@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Replicon.Cryptography.SCrypt</id>
+        <version>1.1.6.13</version>
+        <title />
+        <authors>Replicon Inc.</authors>
+        <owners />
+        <licenseUrl>https://raw.github.com/replicon/Replicon.Cryptography.SCrypt/master/LICENSE</licenseUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>scrypt key-derivation function in mixed-mode assembly for .NET</description>
+    </metadata>
+    <files>
+        <file src="Replicon.Cryptography.SCrypt\bin\Release .NET 3.5\Replicon.Cryptography.SCrypt.dll" target="lib\net35\Replicon.Cryptography.SCrypt.dll" />
+        <file src="Replicon.Cryptography.SCrypt\bin\Release .NET 3.5\Replicon.Cryptography.SCrypt.pdb" target="lib\net35\Replicon.Cryptography.SCrypt.pdb" />
+        <file src="Replicon.Cryptography.SCrypt\bin\Release .NET 3.5\Replicon.Cryptography.SCrypt.XML" target="lib\net35\Replicon.Cryptography.SCrypt.XML" />
+        <file src="Replicon.Cryptography.SCrypt\bin\Release .NET 4.0\Replicon.Cryptography.SCrypt.dll" target="lib\net40\Replicon.Cryptography.SCrypt.dll" />
+        <file src="Replicon.Cryptography.SCrypt\bin\Release .NET 4.0\Replicon.Cryptography.SCrypt.pdb" target="lib\net40\Replicon.Cryptography.SCrypt.pdb" />
+        <file src="Replicon.Cryptography.SCrypt\bin\Release .NET 4.0\Replicon.Cryptography.SCrypt.XML" target="lib\net40\Replicon.Cryptography.SCrypt.XML" />
+        <file src="LICENSE" target="lib\LICENSE" />
+        <file src="README.rst" target="lib\README.rst" />
+    </files>
+</package>
