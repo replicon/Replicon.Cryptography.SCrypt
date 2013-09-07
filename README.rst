@@ -16,6 +16,14 @@ Pre-compiled binaries are available for download:
 `scrypt-net40-1.1.6.13.zip <https://dl.dropbox.com/s/kppdambw3wz6xix/scrypt-net40-1.1.6.13.zip?dl=1>`_
     Binary build of version 1.1.6.13 for .NET 4.0.
 
+Please note that the usage of these assemblies requires the Microsoft Visual C++ 2010 runtime.  Normally this
+is already installed on a development machine along with Visual Studio, but may not be installed on all
+machines that you are using this library on (eg. production servers).  The required dependencies can be
+downloaded from Microsoft (x86_ or x64_).
+
+.. _x86: http://www.microsoft.com/en-us/download/details.aspx?id=8328
+.. _x64: http://www.microsoft.com/en-ca/download/details.aspx?id=13523
+
 Why the weird mixed-mode assembly, and C++/CLI stuff?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
