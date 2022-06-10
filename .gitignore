@@ -7,6 +7,7 @@ ipch
 Win32
 x64
 obj
+/packages
 Replicon.Cryptography.SCrypt/bin
 Replicon.Cryptography.SCrypt.snk
 Replicon.Cryptography.SCrypt.Tests/bin
