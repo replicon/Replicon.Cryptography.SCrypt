@@ -1,118 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{CED9B1A4-A1D5-4E52-B3A3-80608EA484E6}</ProjectGuid>
+    <TargetFrameworks>net6.0;net48</TargetFrameworks>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Replicon.Cryptography.SCrypt</RootNamespace>
-    <AssemblyName>Replicon.Cryptography.SCrypt</AssemblyName>
-    <TargetFrameworkVersion Condition="$(Configuration) == 'Debug .NET 3.5' Or $(Configuration) == 'Release .NET 3.5'">v3.5</TargetFrameworkVersion>
-    <TargetFrameworkVersion Condition="$(Configuration) == 'Debug .NET 4.0' Or $(Configuration) == 'Release .NET 4.0'">v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug .NET 4.0|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug .NET 4.0\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug .NET 4.0\Replicon.Cryptography.SCrypt.XML</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release .NET 4.0|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release .NET 4.0\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release .NET 4.0\Replicon.Cryptography.SCrypt.XML</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release .NET 3.5|AnyCPU'">
-    <OutputPath>bin\Release .NET 3.5\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\Release .NET 3.5\Replicon.Cryptography.SCrypt.XML</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug .NET 3.5|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug .NET 3.5\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\Debug .NET 3.5\Replicon.Cryptography.SCrypt.XML</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>False</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\Replicon.Cryptography.SCrypt.Public.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <DelaySign>true</DelaySign>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="DefaultPasswordHash.cs" />
-    <Compile Include="Factory.cs" />
-    <Compile Include="IKeyDerivationFunction.cs" />
-    <Compile Include="IPasswordHash.cs" />
-    <Compile Include="MixedModeAssemblyKeyDerivationFunction.cs" />
-    <Compile Include="SaltParseException.cs" />
-    <Compile Include="SCrypt.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="..\Replicon.Cryptography.SCrypt.MMA\Win32\Release .NET 4.0\Replicon.Cryptography.SCrypt.MMA.pdb" Condition="$(Configuration) == 'Debug .NET 4.0' Or $(Configuration) == 'Release .NET 4.0'">
-      <Link>Replicon.Cryptography.SCrypt.MMA-win32.pdb</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Replicon.Cryptography.SCrypt.MMA\x64\Release .NET 4.0\Replicon.Cryptography.SCrypt.MMA.pdb" Condition="$(Configuration) == 'Debug .NET 4.0' Or $(Configuration) == 'Release .NET 4.0'">
-      <Link>Replicon.Cryptography.SCrypt.MMA-x64.pdb</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Replicon.Cryptography.SCrypt.MMA\Win32\Release .NET 4.0\Replicon.Cryptography.SCrypt.MMA.dll" Condition="$(Configuration) == 'Debug .NET 4.0' Or $(Configuration) == 'Release .NET 4.0'">
-      <Link>Replicon.Cryptography.SCrypt.MMA-win32.dll</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Replicon.Cryptography.SCrypt.MMA\x64\Release .NET 4.0\Replicon.Cryptography.SCrypt.MMA.dll" Condition="$(Configuration) == 'Debug .NET 4.0' Or $(Configuration) == 'Release .NET 4.0'">
-      <Link>Replicon.Cryptography.SCrypt.MMA-x64.dll</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Replicon.Cryptography.SCrypt.MMA\Win32\Release .NET 3.5\Replicon.Cryptography.SCrypt.MMA.pdb" Condition="$(Configuration) == 'Debug .NET 3.5' Or $(Configuration) == 'Release .NET 3.5'">
-      <Link>Replicon.Cryptography.SCrypt.MMA-win32.pdb</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Replicon.Cryptography.SCrypt.MMA\x64\Release .NET 3.5\Replicon.Cryptography.SCrypt.MMA.pdb" Condition="$(Configuration) == 'Debug .NET 3.5' Or $(Configuration) == 'Release .NET 3.5'">
-      <Link>Replicon.Cryptography.SCrypt.MMA-x64.pdb</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Replicon.Cryptography.SCrypt.MMA\Win32\Release .NET 3.5\Replicon.Cryptography.SCrypt.MMA.dll" Condition="$(Configuration) == 'Debug .NET 3.5' Or $(Configuration) == 'Release .NET 3.5'">
-      <Link>Replicon.Cryptography.SCrypt.MMA-win32.dll</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Replicon.Cryptography.SCrypt.MMA\x64\Release .NET 3.5\Replicon.Cryptography.SCrypt.MMA.dll" Condition="$(Configuration) == 'Debug .NET 3.5' Or $(Configuration) == 'Release .NET 3.5'">
-      <Link>Replicon.Cryptography.SCrypt.MMA-x64.dll</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>"C:\Program Files\Microsoft SDKs\Windows\v6.0A\Bin\sn.exe" -R "$(TargetPath)" "$(SolutionDir)Replicon.Cryptography.SCrypt.snk"</PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

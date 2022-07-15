@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace Replicon.Cryptography.SCrypt
 {
     /// <summary>

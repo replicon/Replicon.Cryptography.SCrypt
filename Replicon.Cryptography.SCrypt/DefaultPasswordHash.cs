@@ -121,13 +121,17 @@ namespace Replicon.Cryptography.SCrypt
 
         public bool TryParseSalt(string salt, out byte[] saltBytes, out ulong N, out uint r, out uint p, out uint hashLengthBytes)
         {
+#pragma warning disable CS8601 // Possible null reference assignment.
             var error = InternalTryParseSalt(salt, out saltBytes, out N, out r, out p, out hashLengthBytes);
+#pragma warning restore CS8601 // Possible null reference assignment.
             return error == null;
         }
 
         public void ParseSalt(string salt, out byte[] saltBytes, out ulong N, out uint r, out uint p, out uint hashLengthBytes)
         {
+#pragma warning disable CS8601 // Possible null reference assignment.
             var error = InternalTryParseSalt(salt, out saltBytes, out N, out r, out p, out hashLengthBytes);
+#pragma warning restore CS8601 // Possible null reference assignment.
             if (error != null)
                 throw error;
         }

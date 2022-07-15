@@ -1,8 +1,8 @@
-﻿using System;
+﻿
+using System;
 
 namespace Replicon.Cryptography.SCrypt
 {
-    /// <summary>Static wrapper for Factory.CreatePasswordHash().</summary>
     public static class SCrypt
     {
         #region IPasswordHash instance
