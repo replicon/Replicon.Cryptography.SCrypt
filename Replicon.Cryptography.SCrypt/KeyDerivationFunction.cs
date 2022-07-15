@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 
 namespace Replicon.Cryptography.SCrypt
 {
+    //FIXME: Use https://github.com/viniciuschiele/Scrypt as a dependency after PR #11 is released.
     class KeyDerivationFunction : IKeyDerivationFunction
     {
         public byte[] DeriveKey(byte[] password, byte[] salt, ulong N, uint r, uint p, uint derivedKeyLengthBytes)
