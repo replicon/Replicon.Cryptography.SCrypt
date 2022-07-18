@@ -1,0 +1,81 @@
+version: 1.0.0.{build}
+
+configuration: Release
+platform: Any CPU
+
+skip_tags: true
+
+init:
+  - git config --global core.autocrlf true
+
+install:
+  - dotnet nuget add source $env:myget_replicon_url --name replicon
+  - dotnet nuget add source $env:myget_developer_url --name replicon-dev
+  - ps: |
+          $env:component_version = $env:APPVEYOR_BUILD_VERSION
+          If ($env:APPVEYOR_REPO_BRANCH -ne "master") {
+            $nuget_suffix = $env:APPVEYOR_REPO_BRANCH.substring(0, [System.Math]::Min(20, $env:APPVEYOR_REPO_BRANCH.length)) -replace "[^a-zA-Z0-9\-]","-"
+            $env:component_version = $env:component_version + "-" + $nuget_suffix
+          }
+          Write-Host "Nuget Component Version:" $env:component_version
+
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
+  assembly_informational_version: "$(component_version)"
+
+environment:
+  myget_replicon_url:
+    secure: eEFu/JKv7aKn45Ucq8lUkP1NxV/VtF5NX9OSo5DanUn2GVFYLv1Cl0PPb8823MF2sD1TXITVyEjjHgHovOwRXBWmLDuU/pgBgpu/4Z98bSv9GoDYotkI/zvrgimxmYnl
+  myget_developer_url:
+    secure: eEFu/JKv7aKn45Ucq8lUkEiOYL9mzrMt4EEDQEp1cVkVG1grvF8JP1pql0y07reUX2xZ4ehSfrZYcOg5bvlOrSVpG/Jx13+aNXkBIy4Ad61R8S+CaD7AC0R6Ci1IwdyL
+  matrix:
+  - job_name: Linux
+    appveyor_build_worker_image: Ubuntu
+  - job_name: MacOS
+    appveyor_build-worker_image: macOS
+  - job_name: Windows
+    appveyor_build_worker_image: Visual Studio 2022
+    job_depends_on: Linux
+matrix:
+  fast_finish: true
+  
+build:
+  publish_nuget: true
+
+build_script:
+  - ps: dotnet build
+
+for:
+  -
+    matrix:
+      only:
+        - job_name: Windows
+    build_script:
+      - ps: dotnet build
+    after_build:
+      - ps: dotnet pack -p:PackageVersion=${env:component_version}
+
+artifacts:
+  - path: '**\*.nupkg'
+    type: NuGetPackage
+deploy:
+    # push package to developer NuGet feed
+  - provider: NuGet
+    server: https://replicon.myget.org/F/developer
+    api_key:
+      secure: 27434JSofx7gmWo9i1jNswrRXm6Yxczya5T0z056CYTKoSUrP9OUBu7SZoiSiR2u
+    skip_symbols: true
+    artifact: /.*\.nupkg/
+
+    # if master, push NuGet package to MyGet
+  - provider: NuGet
+    server: https://replicon.myget.org/F/replicon
+    api_key:
+      secure: 27434JSofx7gmWo9i1jNswrRXm6Yxczya5T0z056CYTKoSUrP9OUBu7SZoiSiR2u
+    skip_symbols: true
+    artifact: /.*\.nupkg/
+    on:
+      branch: master
