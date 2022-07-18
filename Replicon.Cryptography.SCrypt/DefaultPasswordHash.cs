@@ -75,15 +75,15 @@ namespace Replicon.Cryptography.SCrypt
             StringBuilder builder = new StringBuilder();
             builder.Append("$scrypt$");
             builder.Append(N);
-            builder.Append("$");
+            builder.Append('$');
             builder.Append(r);
-            builder.Append("$");
+            builder.Append('$');
             builder.Append(p);
-            builder.Append("$");
+            builder.Append('$');
             builder.Append(hashLengthBytes);
-            builder.Append("$");
+            builder.Append('$');
             builder.Append(Convert.ToBase64String(salt));
-            builder.Append("$");
+            builder.Append('$');
             return builder.ToString();
         }
 
@@ -144,8 +144,7 @@ namespace Replicon.Cryptography.SCrypt
 
             var password_data = Encoding.UTF8.GetBytes(password);
             var hash_data = DeriveKey(password_data, salt_data, N, r, p, hashLengthBytes);
-
-            return salt.Substring(0, salt.LastIndexOf('$') + 1) + Convert.ToBase64String(hash_data);
+            return string.Concat(salt.Substring(0, salt.LastIndexOf('$') + 1), Convert.ToBase64String(hash_data));
         }
 
         public bool Verify(string password, string hash)
