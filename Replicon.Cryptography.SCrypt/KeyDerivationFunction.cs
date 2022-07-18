@@ -3,7 +3,10 @@ using System.Security.Cryptography;
 
 namespace Replicon.Cryptography.SCrypt
 {
-    //FIXME: Use https://github.com/viniciuschiele/Scrypt as a dependency after PR #11 is released.
+    // NOTE: The below code is copied from Vinicius Chiele's Scrypt library(https://github.com/viniciuschiele/Scrypt).
+    // The project has an Apache License 2.0(https://github.com/viniciuschiele/Scrypt/blob/master/LICENSE) which allows us
+    // to use the code here.
+    // FIXME: Use https://github.com/viniciuschiele/Scrypt as a dependency after PR #11 is released.
     class KeyDerivationFunction : IKeyDerivationFunction
     {
         public byte[] DeriveKey(byte[] password, byte[] salt, ulong N, uint r, uint p, uint derivedKeyLengthBytes)

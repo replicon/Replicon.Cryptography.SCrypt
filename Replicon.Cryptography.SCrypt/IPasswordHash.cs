@@ -1,7 +1,8 @@
 ﻿
 namespace Replicon.Cryptography.SCrypt
-{/// <summary>Wrapper for the scrypt key-derivation function that provides helper functions for a common use-case
- /// of scrypt as a password hashing algorithm.</summary>
+{
+    /// <summary>Wrapper for the scrypt key-derivation function that provides helper functions for a common use-case
+    /// of scrypt as a password hashing algorithm.</summary>
     public interface IPasswordHash : IKeyDerivationFunction
     {
         /// <summary>Default value for saltLengthBytes used by parameterless GenerateSalt, currently 16 bytes.</summary>
