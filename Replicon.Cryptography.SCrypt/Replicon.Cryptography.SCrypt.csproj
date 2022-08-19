@@ -12,6 +12,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <DelaySign>true</DelaySign>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Bryllite.Cryptography.Scrypt" Version="0.6.0" />
+  </ItemGroup>
 </Project>
