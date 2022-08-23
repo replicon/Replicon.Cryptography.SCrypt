@@ -9,7 +9,7 @@
     <PackageId>Replicon.Cryptography.SCrypt</PackageId>
     <Authors>Replicon Inc.</Authors>
     <Description>scrypt key-derivation function in mixed-mode assembly for .NET</Description>
-    <PackageLicenseFile>C:\Workspaces\Replicon.Cryptography.SCrypt\LICENSE</PackageLicenseFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Bryllite.Cryptography.Scrypt" Version="0.6.0" />
