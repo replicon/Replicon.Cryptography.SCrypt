@@ -5,13 +5,11 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>False</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\Replicon.Cryptography.SCrypt.Public.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <DelaySign>true</DelaySign>
+    <PackageId>Replicon.Cryptography.SCrypt</PackageId>
+    <Authors>Replicon Inc.</Authors>
+    <Description>scrypt key-derivation function in mixed-mode assembly for .NET</Description>
+    <PackageLicenseFile>C:\Workspaces\Replicon.Cryptography.SCrypt\LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Bryllite.Cryptography.Scrypt" Version="0.6.0" />
