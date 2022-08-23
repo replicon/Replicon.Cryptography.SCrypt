@@ -8,7 +8,7 @@
     <AssemblyOriginatorKeyFile>..\Replicon.Cryptography.SCrypt.Public.snk</AssemblyOriginatorKeyFile>
     <PackageId>Replicon.Cryptography.SCrypt</PackageId>
     <Authors>Replicon Inc.</Authors>
-    <Description>scrypt key-derivation function in mixed-mode assembly for .NET</Description>
+    <Description>scrypt key-derivation function for .NET with our own wrapper</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
