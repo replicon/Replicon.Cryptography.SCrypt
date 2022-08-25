@@ -12,6 +12,9 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Bryllite.Cryptography.Scrypt" Version="0.6.0" />
   </ItemGroup>
 </Project>
