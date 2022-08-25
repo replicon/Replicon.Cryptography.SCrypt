@@ -9,8 +9,8 @@ init:
   - git config --global core.autocrlf true
 
 install:
-  - dotnet nuget add source $env:myget_replicon_url --name replicon
-  - dotnet nuget add source $env:myget_developer_url --name replicon-dev
+  - sh: dotnet nuget add source https://replicon.myget.org/F/replicon/auth/$myget_auth/api/v2 --name replicon
+  - sh: dotnet nuget add source https://replicon.myget.org/F/developer/auth/$myget_auth/api/v2 --name replicon-dev
   - ps: |
           $env:component_version = $env:APPVEYOR_BUILD_VERSION
           If ($env:APPVEYOR_REPO_BRANCH -ne "master") {
@@ -27,15 +27,11 @@ assembly_info:
   assembly_informational_version: "$(component_version)"
 
 environment:
-  myget_replicon_url:
-    secure: eEFu/JKv7aKn45Ucq8lUkP1NxV/VtF5NX9OSo5DanUn2GVFYLv1Cl0PPb8823MF2sD1TXITVyEjjHgHovOwRXBWmLDuU/pgBgpu/4Z98bSv9GoDYotkI/zvrgimxmYnl
-  myget_developer_url:
-    secure: eEFu/JKv7aKn45Ucq8lUkEiOYL9mzrMt4EEDQEp1cVkVG1grvF8JP1pql0y07reUX2xZ4ehSfrZYcOg5bvlOrSVpG/Jx13+aNXkBIy4Ad61R8S+CaD7AC0R6Ci1IwdyL
+  myget_auth:
+    secure: 27434JSofx7gmWo9i1jNswrRXm6Yxczya5T0z056CYTKoSUrP9OUBu7SZoiSiR2u
   matrix:
   - job_name: Linux
     appveyor_build_worker_image: Ubuntu
-  - job_name: MacOS
-    appveyor_build-worker_image: macOS
   - job_name: Windows
     appveyor_build_worker_image: Visual Studio 2022
     job_depends_on: Linux
