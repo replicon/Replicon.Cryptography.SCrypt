@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace Replicon.Cryptography.SCrypt
 {
     /// <summary>
@@ -40,7 +39,7 @@ namespace Replicon.Cryptography.SCrypt
         #endregion
         #region IKeyDerivationFunction factory
 
-        private static IKeyDerivationFunction nativeKdf;
+        private static IKeyDerivationFunction Kdf;
         private static readonly object kdfCreationLock = new object();
 
         /// <summary>
@@ -48,26 +47,23 @@ namespace Replicon.Cryptography.SCrypt
         /// </summary>
         public static IKeyDerivationFunction CreateKeyDerivationFunction()
         {
-            return CreateNativeKeyDerivationFunction();
+            return CreateSCryptKeyDerivationFunction();
         }
 
         /// <summary>
-        /// Create an IKeyDerivationFunction implemented by a mixed-mode assembly.  This is a high-performance
-        /// implementation using SSE2, but requires support for C++/CLI mixed-mode assemblies (ie. doesn't work on
-        /// Mono), and requires that the current environment be supported (.NET 3.5 or 4.0, x86 or x64).
+        /// Create an IKeyDerivationFunction. 
         /// </summary>
-        /// <remarks>If the mixed-mode assembly cannot be loaded, this method will... FIXME: what?</remarks>
-        public static IKeyDerivationFunction CreateNativeKeyDerivationFunction()
+        public static IKeyDerivationFunction CreateSCryptKeyDerivationFunction()
         {
-            if (nativeKdf != null)
-                return nativeKdf;
+            if (Kdf != null)
+                return Kdf;
 
             lock (kdfCreationLock)
             {
-                if (nativeKdf != null)
-                    return nativeKdf;
+                if (Kdf != null)
+                    return Kdf;
 
-                return nativeKdf = new MixedModeAssemblyKeyDerivationFunction();
+                return Kdf = new KeyDerivationFunction();
             }
         }
 

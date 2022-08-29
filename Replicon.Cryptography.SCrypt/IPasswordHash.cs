@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace Replicon.Cryptography.SCrypt
 {
     /// <summary>Wrapper for the scrypt key-derivation function that provides helper functions for a common use-case
