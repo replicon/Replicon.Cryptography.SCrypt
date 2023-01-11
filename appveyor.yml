@@ -28,7 +28,7 @@ assembly_info:
 
 environment:
   myget_auth:
-    secure: 27434JSofx7gmWo9i1jNswrRXm6Yxczya5T0z056CYTKoSUrP9OUBu7SZoiSiR2u
+    secure: dAoXslhhgrSL3JkTOMBUEMmpaTfqYzbkGP6pAbQA85WkCdt8FdP2B4Hyp9aDYMNw
   matrix:
   - job_name: Linux
     appveyor_build_worker_image: Ubuntu
@@ -68,7 +68,7 @@ deploy:
   - provider: NuGet
     server: https://replicon.myget.org/F/developer
     api_key:
-      secure: 27434JSofx7gmWo9i1jNswrRXm6Yxczya5T0z056CYTKoSUrP9OUBu7SZoiSiR2u
+      secure: dAoXslhhgrSL3JkTOMBUEMmpaTfqYzbkGP6pAbQA85WkCdt8FdP2B4Hyp9aDYMNw 
     skip_symbols: true
     artifact: /.*\.nupkg/
 
@@ -76,7 +76,7 @@ deploy:
   - provider: NuGet
     server: https://replicon.myget.org/F/replicon
     api_key:
-      secure: 27434JSofx7gmWo9i1jNswrRXm6Yxczya5T0z056CYTKoSUrP9OUBu7SZoiSiR2u
+      secure: dAoXslhhgrSL3JkTOMBUEMmpaTfqYzbkGP6pAbQA85WkCdt8FdP2B4Hyp9aDYMNw 
     skip_symbols: true
     artifact: /.*\.nupkg/
     on:
