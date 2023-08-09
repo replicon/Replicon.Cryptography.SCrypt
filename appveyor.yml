@@ -10,15 +10,15 @@ init:
 
 install:
   - ps: |
-          aws s3 cp --region us-west-2 s3://codepipeline-docker-runner-us-west-2/credentials/myget/MyGetKeys.json ./MyGetKeys.json
-          $MYGET_CONTENT = Get-Content -PATH MyGetKeys.json | ConvertFrom-Json
-          $env:unencrypted_readwrite_myget_token = $MYGET_CONTENT.ReadWrite
-          $env:unencrypted_readonly_myget_token = $MYGET_CONTENT.ReadOnly 
+          aws s3 cp --region us-west-2 s3://codepipeline-docker-runner-us-west-2/credentials/github-packages/GitHubReadWrite.json ./GitHubReadWrite.json
+          aws s3 cp --region us-west-2 s3://codepipeline-docker-runner-us-west-2/credentials/github-packages/GitHubReadOnly.json ./GitHubReadOnly.json
+          $GHP_RW_CONTENT = Get-Content -PATH GitHubReadWrite.json | ConvertFrom-Json
+          $env:unencrypted_readwrite_ghp_token = $GHP_RW_CONTENT.replicon 
+          $GHP_RO_CONTENT = Get-Content -PATH GitHubReadOnly.json | ConvertFrom-Json
+          $env:unencrypted_readonly_ghp_token = $GHP_RO_CONTENT.replicon
+          Remove-Item -Path .\GitHubReadWrite.json
           
-          Remove-Item -Path .\MyGetKeys.json
-          
-          dotnet nuget add source ("https://replicon.myget.org/F/replicon/auth/"+$env:unencrypted_readonly_myget_token+"/api/v2") --name replicon
-          dotnet nuget add source ("https://replicon.myget.org/F/developer/auth/"+$env:unencrypted_readonly_myget_token+"/api/v2") --name replicon-dev
+          nuget sources Add -NonInteractive -Name replicon -Username repl-ci-bot -Password $env:unencrypted_readonly_ghp_token -StorePasswordInClearText -Source "https://nuget.pkg.github.com/replicon/index.json"
 
           $env:component_version = $env:APPVEYOR_BUILD_VERSION
           If ($env:APPVEYOR_REPO_BRANCH -ne "master") {
@@ -70,18 +70,10 @@ artifacts:
   - path: '**\*.nupkg'
     type: NuGetPackage
 deploy:
-    # push package to developer NuGet feed
+    # push package to developer Github packages
   - provider: NuGet
-    server: https://replicon.myget.org/F/developer
-    api_key: ${unencrypted_readwrite_myget_token}
+    server: https://nuget.pkg.github.com/replicon/index.json
+    api_key: ${unencrypted_readwrite_ghp_token}
     skip_symbols: true
     artifact: /.*\.nupkg/
 
-    # if master, push NuGet package to MyGet
-  - provider: NuGet
-    server: https://replicon.myget.org/F/replicon
-    api_key: ${unencrypted_readwrite_myget_token}
-    skip_symbols: true
-    artifact: /.*\.nupkg/
-    on:
-      branch: master
