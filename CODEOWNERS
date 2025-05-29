@@ -1,0 +1,6 @@
+# Default reviewers if not overridden below
+*                @replicon/sre-review
+
+# CODEOWNERS changes must be approved by engineering managers
+
+/CODEOWNERS      @replicon/engineering-managers
