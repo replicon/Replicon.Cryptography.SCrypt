@@ -1,0 +1,45 @@
+on:
+  pull_request: {}
+  push:
+    branches:
+    - main
+    - master
+name: Checkmarx SAST Scan
+jobs:
+  checkmarx-scan:
+        name: Checkmarx SAST Scan
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Run Checkmarx SAST Scan
+              uses: checkmarx-ts/checkmarx-cxflow-github-action@v2.3
+              with:
+                # Connection parameters
+                checkmarx_url: https://cmxext.deltek.com
+                checkmarx_username: ${{ secrets.CHECKMARX_USERNAME }}
+                checkmarx_password: ${{ secrets.CHECKMARX_PASSWORD }}
+                checkmarx_client_secret: ${{ secrets.CHECKMARX_CLIENT_SECRET }}
+                team: "/CxServer/Security/Deltek/Replicon"
+
+                # Project configuration
+                project: Replicon-${{ github.event.repository.name }}
+                scanners: sast
+                # bug_tracker: GitHub
+                incremental: false
+                break_build: false
+
+                # Scan parameters and thresholds
+                params: >-
+                  --namespace=${{ github.repository_owner}}
+                  --checkmarx.settings-override=true
+                  --repo-name=${{ github.event.repository.name}}
+                  --branch=${{ github.ref_name || github.head_ref}}
+                  --cx-flow.filterSeverity
+                  --cx-flow.thresholds.high=1
+                  --cx-flow.thresholds.medium=1
+                  ${{ github.event.number && format('--merge-id={0}', github.event.number)}}
+                  
