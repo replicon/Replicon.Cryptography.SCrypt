@@ -1,0 +1,95 @@
+name: Black Duck Security Scan
+
+on:
+  pull_request: {}
+  push:
+    branches:
+    - main
+    - master
+  schedule:
+    # Run weekly on Sundays at 2 AM UTC
+    - cron: '0 2 * * 0'
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  blackduck-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+        registry-url: 'https://npm.pkg.github.com/'
+        scope: '@replicon'
+
+    - name: Update package-locks
+      env:
+        NODE_AUTH_TOKEN: ${{secrets.GH_NPM_TOKEN}}
+      run: |
+        find . -name "package.json" -not -path "*/node_modules/*" | while read pkg; do
+            dir=$(dirname "$pkg")
+            lock="$dir/package-lock.json"
+            yarn_lock="$dir/yarn.lock"
+
+            if [ -f "$yarn_lock" ]; then
+              echo "Skipping $dir because yarn.lock is present."
+              continue
+            fi
+
+            if [ ! -f "$lock" ]; then
+              echo "No package-lock.json found in $dir. Running npm install --package-lock-only..."
+              cd "$dir"
+              npm install --package-lock-only --force || echo "Failed in $dir"
+              cd - > /dev/null
+            elif jq -e '.lockfileVersion == 1' "$lock" > /dev/null; then
+              echo "package-lock.json in $dir has lockfileVersion 1. Regenerating..."
+              cd "$dir"
+              rm -f package-lock.json
+              npm install --package-lock-only --force || echo "Failed in $dir"
+              cd - > /dev/null
+            else
+              echo "package-lock.json in $dir is up to date (lockfileVersion != 1). Skipping."
+            fi
+          done
+
+    - name: Test Black Duck Connection
+      run: |
+        echo "Testing connection to Black Duck server..."
+        curl -I "${{ secrets.BLACKDUCK_URL }}" || echo "Connection test failed"
+        
+    - name: Run Black Duck Detect
+      run: |
+        # Download and run Black Duck Detect
+        curl -O https://detect.blackduck.com/detect9.sh
+        chmod +x detect9.sh
+        
+        # Add debug logging
+        ./detect9.sh \
+          --blackduck.url=${{ secrets.BLACKDUCK_URL }} \
+          --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} \
+          --detect.project.name=${{ github.repository }} \
+          --detect.project.version.name=${{ github.ref_name }} \
+          --detect.source.path=.\
+          --detect.code.location.name="${{ github.repository }}-${{ github.ref_name }}" \
+          --detect.policy.check.fail.on.severities=BLOCKER,CRITICAL \
+          --detect.cleanup=false \
+          --logging.level.detect=DEBUG \
+          --blackduck.trust.cert=true \
+          --detect.excluded.directories=node_modules,target,build,dist,.git \
+          --detect.detector.search.depth=99
+
+    - name: Upload Black Duck results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: blackduck-results
+        path: |
+          .synopsys/
+          blackduck-output/
