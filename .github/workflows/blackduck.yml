@@ -1,7 +1,6 @@
 name: Black Duck Security Scan
 
 on:
-  pull_request: {}
   push:
     branches:
     - main
